@@ -7,3 +7,11 @@ export function getClassNamesService<T>(): Promise<T> {
         return Promise.reject(error);
     })
 }
+
+export function deleteClassNameService<T>(classId: string): Promise<T> {
+    return httpAxios.delete<T, T>(`/class/deleteClassName/${classId}`).then((response: T) => {
+        return response;
+    }, (error) => {
+        return Promise.reject(error);
+    })
+}

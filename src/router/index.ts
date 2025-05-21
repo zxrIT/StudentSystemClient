@@ -30,6 +30,11 @@ const routes: Array<RouteRecordRaw> = [
                 path: SYSTEM_LEFT_NAV.CLASS,
                 name: "class",
                 component: () => import("@/views/management/ClassManagement.vue"),
+            },
+            {
+                path: SYSTEM_LEFT_NAV.CLASS_DETAILS,
+                name: "details",
+                component: () => import("@/views/management/ClassDetailsManagement.vue"),
             }
         ]
     }
