@@ -29,9 +29,11 @@ watch(async () => {
 
           </div>
           <template #footer>
-            <div>
-              查看详情
-            </div>
+            <a href="javascript:void(0)">
+              <div style="float: right;text-align: center">
+                查看详情<el-icon><IEpDArrowRight /></el-icon>
+              </div>
+            </a>
           </template>
         </el-card>
       </div>
@@ -61,7 +63,6 @@ watch(async () => {
     .flex-item {
       width: calc((100% - 20px) / 3);
       height: 300px;
-      background-color: #ffffff;
       border-radius: 10px;
       display: flex;
       align-items: center;
@@ -70,6 +71,17 @@ watch(async () => {
       .card-item {
         width: 100%;
         height: 95%;
+        display: flex;
+        flex-direction: column;
+
+        :deep(.el-card__body) {
+          flex: 1;
+          overflow: auto;
+        }
+
+        :deep(.el-card__footer) {
+          padding: 10px 20px;
+        }
       }
     }
   }
