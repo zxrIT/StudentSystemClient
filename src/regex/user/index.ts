@@ -1,0 +1,1 @@
+export const studentIdRegex: RegExp = /^\d{10}$/;
