@@ -17,3 +17,11 @@ export interface IStudentView {
     studentGrade: string;
     roleId: string
 }
+
+export interface IStudentSimple {
+    studentId: string;
+    studentName: string;
+    studentClass: string;
+    studentIcon: string;
+    studentGrade: string;
+}

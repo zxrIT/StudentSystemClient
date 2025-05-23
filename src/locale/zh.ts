@@ -4,6 +4,7 @@ const zhMessage = {
     "TeacherManagement": '教师管理',
     "CurriculumManagement": '课程管理',
     "ClassManagement": '班级管理',
+    "CollegeManagement": '学院管理',
 }
 
 export default zhMessage

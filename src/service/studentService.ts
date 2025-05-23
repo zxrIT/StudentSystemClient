@@ -9,6 +9,14 @@ export function getStudentService<T>(quantity: number, page: number): Promise<T>
     })
 }
 
+export function getStudentByClassService<T>(quantity: number, page: number, className: string): Promise<T> {
+    return httpAxios.get<T, T>(`/student/getStudentByClass/${quantity}/${page}/${className}`).then((response: T) => {
+        return response;
+    }, (error) => {
+        return Promise.reject(error);
+    })
+}
+
 export function getStudentSelectService<T>(payload: number, content: string, quantity: number,
                                            page: number): Promise<T> {
     return httpAxios.get<T, T>(`/student/getSelectStudent/${payload}/${content}/${quantity}/${page}`).then((response: T) => {

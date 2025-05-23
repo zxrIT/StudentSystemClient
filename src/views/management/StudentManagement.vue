@@ -330,7 +330,7 @@ const resetPassword = async (_, row: IStudent) => {
         </el-input>
       </el-form-item>
       <el-form-item label="学生年龄" prop="studentSex">
-        <el-input v-model="ruleForm.studentSex"/>
+        <el-input v-model.number="ruleForm.studentSex"/>
       </el-form-item>
       <el-form-item label="学生年级" prop="studentGrade">
         <el-segmented style="width: 100%" v-model="ruleForm.studentGrade" :options="locationOptionsGrade"/>

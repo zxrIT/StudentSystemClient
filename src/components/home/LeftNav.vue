@@ -42,6 +42,12 @@ const handleClose = (key: string, keyPath: string[]) => {
               </el-icon>
               <span>{{ $t("message.ClassManagement") }}</span>
             </el-menu-item>
+            <el-menu-item :index="SYSTEM_LEFT_NAV.COLLEGE">
+              <el-icon>
+                <IEpReading/>
+              </el-icon>
+              <span>{{ $t("message.CollegeManagement") }}</span>
+            </el-menu-item>
           </el-menu>
         </el-col>
       </el-row>

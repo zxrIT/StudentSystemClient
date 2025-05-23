@@ -15,5 +15,6 @@ export const useStudentRules = reactive<FormRules<IStudentRuleForm>>({
     ],
     studentSex: [
         {required: true, message: '请输入学生年龄', trigger: 'change'},
+        { type: 'number', message: '年龄只能是数字' },
     ]
 })

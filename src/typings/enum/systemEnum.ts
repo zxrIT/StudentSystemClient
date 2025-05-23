@@ -13,6 +13,7 @@ export enum SYSTEM_LEFT_NAV {
     STUDENT = "/home/student",
     TEACHER = "/home/teacher",
     CLASS = "/home/class",
-    CLASS_DETAILS = "/home/class/details/:id",
+    CLASS_DETAILS = "/home/class/details/:classObject",
     CURRICULUM = "/home/curriculum",
+    COLLEGE = "/home/college",
 }

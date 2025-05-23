@@ -11,6 +11,17 @@ export enum USER_GRADE {
     FORE = "大四"
 }
 
+export enum TEACHER_JOB {
+    LECTURER = "讲师",
+    ASSOCIATE_PROFESSOR = "副教授",
+    PROFESSOR = "教授"
+}
+
+export enum TEACHER_COUNSELOR {
+    COUNSELOR = "辅导员",
+    TEACHER = "普通老师"
+}
+
 export enum USER_SELECT {
     CLASS = 1,
     GRADES = 2,

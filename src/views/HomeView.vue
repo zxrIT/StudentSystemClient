@@ -1,15 +1,10 @@
 <script setup lang="ts">
 import LeftNav from "@/components/home/LeftNav.vue";
-import {useInternationalization, useTopic} from "@/hooks/useSystem";
-
-watch(() => {
-  console.log(useInternationalization(), useTopic())
-})
 
 </script>
 
 <template>
-  <el-config-provider :locale="useInternationalization()" :theme="useTopic()">
+  <el-config-provider>
     <div class="home-container">
       <div class="header-container">
         <Header/>

@@ -4,6 +4,7 @@ const enMessage = {
     "TeacherManagement": 'Teacher management',
     "CurriculumManagement": 'Curriculum management',
     "ClassManagement": 'Class management',
+    "CollegeManagement": 'College management'
 }
 
 export default enMessage

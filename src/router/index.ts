@@ -35,6 +35,11 @@ const routes: Array<RouteRecordRaw> = [
                 path: SYSTEM_LEFT_NAV.CLASS_DETAILS,
                 name: "details",
                 component: () => import("@/views/management/ClassDetailsManagement.vue"),
+            },
+            {
+                path: SYSTEM_LEFT_NAV.COLLEGE,
+                name: "college",
+                component: () => import("@/views/management/CollegeManagement.vue"),
             }
         ]
     }

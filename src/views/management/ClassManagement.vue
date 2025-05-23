@@ -26,9 +26,11 @@ const deleteClassName = async (classId: string) => {
   }
 }
 
-const navigateToClassDetails = (classId: string) => {
-  console.log(classId)
-  router.push({path: SYSTEM_LEFT_NAV.CLASS_DETAILS, params: {id: classId}})
+const navigateToClassDetails = (className: IClass) => {
+  router.push({
+    path: SYSTEM_LEFT_NAV.CLASS_DETAILS,
+    query: {classObject: JSON.stringify(className)}
+  })
 }
 </script>
 
@@ -71,7 +73,7 @@ const navigateToClassDetails = (classId: string) => {
             </div>
           </div>
           <template #footer>
-            <a href="javascript:void(0)" @click="navigateToClassDetails(item.classId)">
+            <a href="javascript:void(0)" @click="navigateToClassDetails(item)">
               <div style="float: right;text-align: center;display: flex;
               align-items: center;gap: 4px">
                 查看详情
