@@ -16,7 +16,7 @@ const tablePages = ref<number>(1)
 const source = ref(0)
 const outputValue = useTransition(source, {duration: 1500})
 source.value = 172000
-const disabled = ref(false)
+const disabled = ref<boolean>(false)
 
 const ruleForm = reactive<ICollege>({
   id: "",

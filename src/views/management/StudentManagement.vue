@@ -65,7 +65,6 @@ watch([isWatchActive, tablePages, reRender], async () => {
         import.meta.env.VITE_PAGINATION_QUANTITY, tablePages.value
     )
     if (studentResponse.code === 200) {
-      console.log(studentResponse.data)
       tableData.splice(0, tableData.length, ...studentResponse.data.records);
       pageCount.value = Math.ceil(studentResponse.data.total / import.meta.env.VITE_PAGINATION_QUANTITY)
     }
@@ -250,6 +249,8 @@ const resetPassword = async (_, row: IStudent) => {
                   <el-dropdown-menu>
                     <el-dropdown-item :command="USER_SELECT.CLASS">按班级</el-dropdown-item>
                     <el-dropdown-item :command="USER_SELECT.GRADES">按年级</el-dropdown-item>
+                    <el-dropdown-item :command="USER_SELECT.ID">按学号</el-dropdown-item>
+                    <el-dropdown-item :command="USER_SELECT.NAME">按名字</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -261,7 +262,7 @@ const resetPassword = async (_, row: IStudent) => {
               <el-popconfirm
                   @confirm="deleteStudent(scope.$index, scope.row)"
                   class="box-item"
-                  title="确认要重置吗？"
+                  title="确认要删除吗？"
                   placement="bottom-start"
               >
                 <template #reference>

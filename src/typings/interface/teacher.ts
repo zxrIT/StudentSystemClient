@@ -1,4 +1,5 @@
 export interface ITeacher {
+    id: string;
     teacherId: string;
     teacherName: string;
     teacherIcon: string;
@@ -8,6 +9,7 @@ export interface ITeacher {
 }
 
 export interface ITeacherView {
+    id: string;
     teacherId: string;
     teacherName: string;
     teacherIcon: string;

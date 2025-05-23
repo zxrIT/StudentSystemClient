@@ -25,4 +25,12 @@ export enum TEACHER_COUNSELOR {
 export enum USER_SELECT {
     CLASS = 1,
     GRADES = 2,
+    ID = 3,
+    NAME = 4
+}
+
+export enum TEACHER_SELECT {
+    COLLEGE = 1,
+    ID = 2,
+    NAME = 3
 }
