@@ -4,8 +4,10 @@ import {IBaseResponse} from "@/typings/response/baseResponse";
 import {PaginationResponse} from "@/typings/response/pagination";
 import {getTeacherService} from "@/service/teacherService";
 import {TEACHER_COUNSELOR, TEACHER_JOB} from "@/typings/enum/user";
-import {IStudent} from "@/typings/interface/student";
 import {ElMessage, FormInstance} from "element-plus";
+import {useTeacherRules} from "@/rules/user/useTeacherRules";
+import {ICollegeName} from "@/typings/interface/college";
+import {getCollegeNamesService} from "@/service/collegeService";
 
 const ruleFormRef = ref<FormInstance>()
 const visibleEdit = ref<boolean>(false)
@@ -16,6 +18,7 @@ const __VITE_USER_AVATAR__ = computed(() => import.meta.env.VITE_USER_AVATAR)
 const tableData = reactive<Array<ITeacher>>([])
 const locationOptionsJob: TEACHER_JOB[] = [TEACHER_JOB.LECTURER, TEACHER_JOB.ASSOCIATE_PROFESSOR, TEACHER_JOB.PROFESSOR]
 const locationOptionsCounselor: TEACHER_COUNSELOR = [TEACHER_COUNSELOR.COUNSELOR, TEACHER_COUNSELOR.TEACHER]
+const collegeSelects = reactive<ICollegeName[]>([])
 
 
 const ruleForm = reactive<ITeacher>({
@@ -52,8 +55,18 @@ const closeDrawer = () => {
   visibleEdit.value = false
 }
 
-const handleEdit = async (_, row: IStudent) => {
+const handleEdit = async (_, row: ITeacher) => {
+  const collegeResponse = await getCollegeNamesService<IBaseResponse<ICollegeName[]>>()
+  if (collegeResponse.code === 200) {
+    collegeSelects.splice(0, collegeSelects.length, ...collegeResponse.data)
+  }
   visibleEdit.value = true
+  ruleFromView.teacherId = row.teacherId
+  ruleFromView.teacherName = row.teacherName
+  ruleFromView.teacherCollege = row.teacherCollege
+  ruleFromView.teacherJob = row.teacherJob === 0 ? TEACHER_JOB.LECTURER : row.teacherJob === 1
+      ? TEACHER_JOB.ASSOCIATE_PROFESSOR : TEACHER_JOB.PROFESSOR
+  ruleFromView.isCounselor = row.isCounselor ? TEACHER_COUNSELOR.COUNSELOR : TEACHER_COUNSELOR.TEACHER
 }
 
 const submitForm = async (formEl: FormInstance | undefined) => {
@@ -154,7 +167,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       </div>
     </el-card>
   </div>
-  <el-drawer v-model="visibleEdit" :show-close="false" direction="btt">
+  <el-drawer v-model="visibleEdit" :show-close="false" direction="btt" size="40%">
     <template #header="{ close, titleId, titleClass }">
       <h4 :id="titleId" :class="titleClass">修改教师信息</h4>
       <el-button type="danger" @click="closeDrawer">
@@ -165,39 +178,52 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       </el-button>
     </template>
     <el-form
-        :inline="true"
         ref="ruleFormRef"
+        :rules="useTeacherRules"
         style="max-width: 99%"
         :model="ruleFromView"
         label-width="auto"
     >
-      <el-form-item label="教师照片" prop="teacherIcon">
-        <el-avatar style="width: 200px;height: 200px;margin-left: 50px;" shape="circle" :src="
-                ruleForm.teacherIcon===undefined || ruleForm.teacherIcon===null?
+      <div class="form-container">
+        <div class="photo-container">
+          <el-form-item label="教师照片" prop="teacherIcon">
+            <el-avatar class="teacher-avatar" shape="circle" :src="
+                ruleFromView.teacherIcon===undefined || ruleFromView.teacherIcon===null?
                 __VITE_USER_AVATAR__:
-                ruleForm.teacherIcon"
-        />
-      </el-form-item>
-      <el-form-item label="teacherId" prop="teacherId">
-        <el-input v-model="ruleForm.teacherId"/>
-      </el-form-item>
-      <el-form-item label="teacherName" prop="teacherName">
-        <el-input v-model="ruleForm.teacherName"/>
-      </el-form-item>
-      <el-form-item label="teacherCollege" prop="teacherCollege">
-        <el-input v-model="ruleForm.teacherCollege"/>
-      </el-form-item>
-      <el-form-item label="teacherJob" prop="teacherJob">
-        <el-segmented style="width: 100%" v-model="ruleForm.teacherJob" :options="locationOptionsJob"/>
-      </el-form-item>
-      <el-form-item label="isCounselor" prop="isCounselor">
-        <el-segmented style="width: 100%" v-model="ruleForm.isCounselor" :options="locationOptionsCounselor"/>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" round size="large" @click="submitForm(ruleFormRef)">
-          修改
-        </el-button>
-      </el-form-item>
+                ruleFromView.teacherIcon"
+            />
+          </el-form-item>
+        </div>
+        <div class="grid-form-items">
+          <el-form-item label="teacherId" prop="teacherId" style="align-items: center;">
+            <el-input v-model="ruleFromView.teacherId"/>
+          </el-form-item>
+          <el-form-item label="teacherName" prop="teacherName" style="align-items: center;">
+            <el-input v-model="ruleFromView.teacherName"/>
+          </el-form-item>
+          <el-form-item label="teacherCollege" prop="teacherCollege" style="align-items: center;">
+            <el-input v-model="ruleFromView.teacherCollege" disabled>
+              <template #append>
+                <el-select v-model="ruleFromView.teacherCollege" :placeholder="null" style="width: 50px">
+                  <el-option v-for="item in collegeSelects" :key="item.id" :label="item.collegeName"
+                             :value="item.collegeName"/>
+                </el-select>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="teacherJob" prop="teacherJob" style="align-items: center;">
+            <el-segmented style="width: 100%" v-model="ruleFromView.teacherJob" :options="locationOptionsJob"/>
+          </el-form-item>
+          <el-form-item label="isCounselor" prop="isCounselor" style="align-items: center;">
+            <el-segmented style="width: 100%" v-model="ruleFromView.isCounselor" :options="locationOptionsCounselor"/>
+          </el-form-item>
+          <el-form-item style="align-items: center;">
+            <el-button type="primary" round size="large" @click="submitForm(ruleFormRef)">
+              修改
+            </el-button>
+          </el-form-item>
+        </div>
+      </div>
     </el-form>
   </el-drawer>
 </template>
@@ -222,6 +248,56 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       display: flex;
       justify-content: right;
       margin-top: 20px;
+    }
+  }
+}
+
+.form-container {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.photo-container {
+  flex: 0 0 200px 200px;
+}
+
+.teacher-avatar {
+  width: 200px;
+  height: 200px;
+}
+
+.grid-form-items {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 20px;
+  row-gap: 40px;
+
+  .el-form-item {
+    margin-bottom: 0 !important;
+
+    display: flex;
+    align-items: center;
+
+    .el-form-item__label {
+      display: flex;
+      align-items: center;
+    }
+
+    .el-form-item__content {
+      flex: 1;
+      display: flex;
+      align-items: center;
+
+      > .el-input, > .el-segmented, > .el-select {
+        width: 100%;
+        align-self: center;
+      }
+    }
+
+    .el-form-item__label {
+      line-height: normal;
     }
   }
 }

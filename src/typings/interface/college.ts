@@ -5,3 +5,8 @@ export interface ICollege {
     id: string,
     isExistence: boolean
 }
+
+export interface ICollegeName {
+    id: string,
+    collegeName: string,
+}

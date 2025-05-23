@@ -9,6 +9,14 @@ export function getCollegeService<T>(quantity: number, page: number): Promise<T>
     })
 }
 
+export function getCollegeNamesService<T>(): Promise<T> {
+    return httpAxios.get<T, T>("/college/getCollegeNames").then((response: T) => {
+        return response;
+    }, (error) => {
+        return Promise.reject(error);
+    })
+}
+
 export function updateCollegeService<T>(college: ICollege): Promise<T> {
     return httpAxios.put<T, T>("/college/updateCollege", college).then((response: T) => {
         return response;
