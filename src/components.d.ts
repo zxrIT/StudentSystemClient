@@ -66,6 +66,7 @@ declare module 'vue' {
     IEpMoon: typeof import('~icons/ep/moon')['default']
     IEpPlus: typeof import('~icons/ep/plus')['default']
     IEpReading: typeof import('~icons/ep/reading')['default']
+    IEpSearch: typeof import('~icons/ep/search')['default']
     IEpSunny: typeof import('~icons/ep/sunny')['default']
     IEpUser: typeof import('~icons/ep/user')['default']
     LeftNav: typeof import('./components/home/LeftNav.vue')['default']
