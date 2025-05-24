@@ -9,6 +9,22 @@ export function getTeacherService<T>(quantity: number, page: number): Promise<T>
     })
 }
 
+export function getAllTeacherService<T>(): Promise<T> {
+    return httpAxios.get<T, T>("/teacher/getAllTeacher").then((response: T) => {
+        return response;
+    }, (error) => {
+        return Promise.reject(error);
+    })
+}
+
+export function getAllCounselorService<T>(): Promise<T> {
+    return httpAxios.get<T, T>("/teacher/getAllCounselor").then((response: T) => {
+        return response;
+    }, (error) => {
+        return Promise.reject(error);
+    })
+}
+
 export function getTeacherSelectService<T>(payload: number, content: string | number, quantity: number,
                                            page: number): Promise<T> {
     return httpAxios.get<T, T>(`/teacher/getSelectTeacher/${payload}/${content}/${quantity}/${page}`).then((response: T) => {
