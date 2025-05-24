@@ -2,6 +2,7 @@ import {createRouter, createWebHashHistory} from 'vue-router'
 import type {RouteRecordRaw} from 'vue-router'
 import HomeView from "@/views/HomeView.vue";
 import StudentManagement from '@/views/management/StudentManagement.vue';
+import LoginView from "@/views/LoginView.vue";
 import {SYSTEM_LEFT_NAV} from "@/typings/enum/systemEnum";
 
 const routes: Array<RouteRecordRaw> = [
@@ -42,6 +43,11 @@ const routes: Array<RouteRecordRaw> = [
                 component: () => import("@/views/management/CollegeManagement.vue"),
             }
         ]
+    },
+    {
+        path: "/",
+        name: "login",
+        component: LoginView,
     }
 ]
 

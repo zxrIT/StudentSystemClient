@@ -2,7 +2,7 @@ import axios from "axios"
 import type {AxiosInstance, AxiosResponse, CreateAxiosDefaults, InternalAxiosRequestConfig} from "axios"
 
 const httpAxios: AxiosInstance = axios.create({
-    baseURL: "http://localhost:8010",
+    baseURL: "http://localhost:10000",
     timeout: 5000
 } as CreateAxiosDefaults)
 

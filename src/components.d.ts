@@ -69,6 +69,7 @@ declare module 'vue' {
     IEpReading: typeof import('~icons/ep/reading')['default']
     IEpSearch: typeof import('~icons/ep/search')['default']
     IEpSunny: typeof import('~icons/ep/sunny')['default']
+    IEpSwitch: typeof import('~icons/ep/switch')['default']
     IEpUser: typeof import('~icons/ep/user')['default']
     LeftNav: typeof import('./components/home/LeftNav.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
