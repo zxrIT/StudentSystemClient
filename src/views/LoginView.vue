@@ -4,6 +4,7 @@ import {USER_ROLE} from "@/typings/enum/user";
 import {IUser} from "@/typings/interface/base";
 import {FormInstance} from "element-plus";
 
+const isLiving = ref<boolean>(false);
 const ruleFormRef = ref<FormInstance>()
 const selectRole = ref<USER_ROLE>(USER_ROLE.STUDENT)
 const ruleFrom = ref<IUser>({
@@ -15,12 +16,7 @@ const ruleFrom = ref<IUser>({
 <template>
   <div class="login-container">
     <div class="login-header-container">
-      <el-icon size="30" style="margin-right: 10px" color="#FFD700">
-        <IEpSwitch/>
-      </el-icon>
-      <el-icon size="30" style="margin-right: 10px" color="#FFD700">
-        <IEpSunny/>
-      </el-icon>
+
     </div>
     <div class="login-content-container">
       <div class="box">
@@ -37,7 +33,12 @@ const ruleFrom = ref<IUser>({
               <el-input v-model="ruleFrom.password" type="password" show-password/>
             </el-form-item>
             <el-form-item style="align-items: center;">
-              <el-tag type="info">Tag 3</el-tag><el-button style="width: 100%" round plain>登录</el-button>
+              <div style="display: flex; align-items: center; width: 100%; justify-content: space-between;">
+                <el-tag :type="isLiving?'success':'info'" size="large">
+                  {{ isLiving ? "已检测" : "未检测" }}
+                </el-tag>
+                <el-button round plain size="large" style="width: 70%"> {{ isLiving ? "登录" : "活体检测" }}</el-button>
+              </div>
             </el-form-item>
           </el-form>
         </div>
@@ -75,6 +76,9 @@ const ruleFrom = ref<IUser>({
   }
 
   .login-content-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 150px;
     width: 100%;
     flex: 10;
 
