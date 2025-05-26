@@ -1,5 +1,15 @@
 <script setup lang="ts">
 import logoImage from "@/assets/icon/logo.png"
+import {USER_ROLE} from "@/typings/enum/user";
+import {IUser} from "@/typings/interface/base";
+import {FormInstance} from "element-plus";
+
+const ruleFormRef = ref<FormInstance>()
+const selectRole = ref<USER_ROLE>(USER_ROLE.STUDENT)
+const ruleFrom = ref<IUser>({
+  username: "",
+  password: "",
+})
 </script>
 
 <template>
@@ -19,10 +29,24 @@ import logoImage from "@/assets/icon/logo.png"
           <h1 style="margin-left: 20px">学生选课系统统一身份认证</h1>
         </div>
         <div class="content-body">
-
+          <el-form ref="ruleFormRef" style="max-width: 99%" label-width="auto" :model="ruleFrom">
+            <el-form-item label="username" prop="username" style="align-items: center">
+              <el-input v-model="ruleFrom.username" style="width: 100%"/>
+            </el-form-item>
+            <el-form-item label="password" prop="password" style="align-items: center">
+              <el-input v-model="ruleFrom.password" type="password" show-password/>
+            </el-form-item>
+            <el-form-item style="align-items: center;">
+              <el-tag type="info">Tag 3</el-tag><el-button style="width: 100%" round plain>登录</el-button>
+            </el-form-item>
+          </el-form>
         </div>
         <div class="content-footer">
-
+          <el-radio-group v-model="selectRole" size="large" fill="#ffce00">
+            <el-radio-button :label="USER_ROLE.STUDENT" :value="USER_ROLE.STUDENT"/>
+            <el-radio-button :label="USER_ROLE.TEACHER" :value="USER_ROLE.TEACHER"/>
+            <el-radio-button :label="USER_ROLE.ADMIN" :value="USER_ROLE.ADMIN"/>
+          </el-radio-group>
         </div>
       </div>
     </div>
@@ -56,15 +80,16 @@ import logoImage from "@/assets/icon/logo.png"
 
     .box {
       margin-left: 100px;
-      width: 500px;
-      height: 500px;
+      width: 400px;
+      height: 300px;
       display: flex;
       flex-direction: column;
-      opacity: 0.7;
-      background-color: #60A0D9;
+      opacity: 0.99;
+      background-color: #ffffff;
 
       .content-header {
-        color: #FFFFFF;
+        margin-top: 10px;
+        color: #ffce00;
         font-size: 25px;
         font-weight: bold;
         width: 100%;
@@ -72,27 +97,6 @@ import logoImage from "@/assets/icon/logo.png"
         display: flex;
         justify-content: center;
         align-items: center;
-
-        @keyframes scale {
-          from {
-            font-size: 50px;
-            color: transparent;
-          }
-          to {
-            font-size: 25px;
-            color: #FFD700;
-          }
-        }
-
-        h1 {
-          background-image: url("../assets/icon/animation.jpeg");
-          background-size: cover;
-          background-clip: text;
-          color: transparent;
-          animation: scale 3s forwards;
-        }
-
-
 
         .image {
           width: 50px;
@@ -103,6 +107,10 @@ import logoImage from "@/assets/icon/logo.png"
       }
 
       .content-body {
+        margin-top: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         width: 100%;
         flex: 5;
       }
@@ -110,6 +118,10 @@ import logoImage from "@/assets/icon/logo.png"
       .content-footer {
         width: 100%;
         flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 10px;
       }
     }
   }
