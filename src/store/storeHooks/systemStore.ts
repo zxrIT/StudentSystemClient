@@ -7,8 +7,17 @@ export const useSystemStore = defineStore("systemStore", () => {
         internationalization: SYSTEM_ENUM_INTERNATION.ZH,
         topic: SYSTEM_ENUM_TOPIC.DARK,
     })
+    const changeTopic = (topic: SYSTEM_ENUM_TOPIC) => {
+        systemState.topic = topic
+    }
+
+    const changeInternationalization = (internationalization: SYSTEM_ENUM_INTERNATION) => {
+        systemState.internationalization = internationalization
+    }
 
     return {
         systemState,
+        changeTopic,
+        changeInternationalization,
     }
 }, {persist: true})

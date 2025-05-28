@@ -25,28 +25,28 @@ const handleClose = (key: string, keyPath: string[]) => {
                 <el-icon>
                   <IEpUser/>
                 </el-icon>
-                <span>{{ $t("message.PersonnelManagement") }}</span>
+                <span>{{ $t("message.leftNav.PersonnelManagement") }}</span>
               </template>
-              <el-menu-item :index="SYSTEM_LEFT_NAV.STUDENT">{{ $t("message.StudentManagement") }}</el-menu-item>
-              <el-menu-item :index="SYSTEM_LEFT_NAV.TEACHER">{{ $t("message.TeacherManagement") }}</el-menu-item>
+              <el-menu-item :index="SYSTEM_LEFT_NAV.STUDENT">{{ $t("message.leftNav.StudentManagement") }}</el-menu-item>
+              <el-menu-item :index="SYSTEM_LEFT_NAV.TEACHER">{{ $t("message.leftNav.TeacherManagement") }}</el-menu-item>
             </el-sub-menu>
             <el-menu-item :index="SYSTEM_LEFT_NAV.CURRICULUM">
               <el-icon>
                 <IEpCollection/>
               </el-icon>
-              <span>{{ $t("message.CurriculumManagement") }}</span>
+              <span>{{ $t("message.leftNav.CurriculumManagement") }}</span>
             </el-menu-item>
             <el-menu-item :index="SYSTEM_LEFT_NAV.CLASS">
               <el-icon>
                 <IEpCoin/>
               </el-icon>
-              <span>{{ $t("message.ClassManagement") }}</span>
+              <span>{{ $t("message.leftNav.ClassManagement") }}</span>
             </el-menu-item>
             <el-menu-item :index="SYSTEM_LEFT_NAV.COLLEGE">
               <el-icon>
                 <IEpReading/>
               </el-icon>
-              <span>{{ $t("message.CollegeManagement") }}</span>
+              <span>{{ $t("message.leftNav.CollegeManagement") }}</span>
             </el-menu-item>
           </el-menu>
         </el-col>

@@ -9,11 +9,11 @@ export enum SYSTEM_ENUM_TOPIC {
 }
 
 export enum SYSTEM_LEFT_NAV {
-    HOME = "/home",
-    STUDENT = "/home/student",
-    TEACHER = "/home/teacher",
-    CLASS = "/home/class",
-    CLASS_DETAILS = "/home/class/details/:classObject",
-    CURRICULUM = "/home/curriculum",
-    COLLEGE = "/home/college",
+    HOME = "/",
+    STUDENT = "/student",
+    TEACHER = "/teacher",
+    CLASS = "/class",
+    CLASS_DETAILS = "/class/details/:classObject",
+    CURRICULUM = "/curriculum",
+    COLLEGE = "/college",
 }

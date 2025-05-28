@@ -57,6 +57,7 @@ declare module 'vue' {
     Footer: typeof import('./components/home/Footer.vue')['default']
     Header: typeof import('./components/home/Header.vue')['default']
     IEpChatLineRound: typeof import('~icons/ep/chat-line-round')['default']
+    IEpCircleCheck: typeof import('~icons/ep/circle-check')['default']
     IEpCircleCloseFilled: typeof import('~icons/ep/circle-close-filled')['default']
     IEpCoin: typeof import('~icons/ep/coin')['default']
     IEpCollection: typeof import('~icons/ep/collection')['default']
@@ -74,5 +75,8 @@ declare module 'vue' {
     LeftNav: typeof import('./components/home/LeftNav.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+  }
+  export interface ComponentCustomProperties {
+    vLoading: typeof import('element-plus/es')['ElLoadingDirective']
   }
 }

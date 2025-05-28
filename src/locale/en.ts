@@ -1,10 +1,24 @@
 const enMessage = {
-    "PersonnelManagement": 'Personnel management',
-    "StudentManagement": 'Student management',
-    "TeacherManagement": 'Teacher management',
-    "CurriculumManagement": 'Curriculum management',
-    "ClassManagement": 'Class management',
-    "CollegeManagement": 'College management'
+    leftNav: {
+        "PersonnelManagement": 'Personnel management',
+        "StudentManagement": 'Student management',
+        "TeacherManagement": 'Teacher management',
+        "CurriculumManagement": 'Curriculum management',
+        "ClassManagement": 'Class management',
+        "CollegeManagement": 'College management'
+    },
+    login: {
+        "Unified authentication": "Unified Authentication",
+        "Student number/work number": "Student ID/Teacher ID",
+        "Password": "Password",
+        "Verification code": "Verification code",
+        "Login": "Login",
+    },
+    userRole: {
+        "STUDENT": "Student",
+        "TEACHER": "Teacher",
+        "ADMIN": "Admin",
+    }
 }
 
 export default enMessage
