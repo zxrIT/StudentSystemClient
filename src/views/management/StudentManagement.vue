@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import {IStudent, IStudentView} from "@/typings/interface/student";
+import {IStudent, IStudentView, IStudentCreateView, IStudentCreate} from "@/typings/interface/student";
 import {
   getStudentSelectService,
   getStudentService,
   resetPasswordService,
   updateStudentService,
-  deleteStudentService
+  deleteStudentService, incrementStudentService
 } from "@/service/studentService";
 import {IBaseResponse} from "@/typings/response/baseResponse";
 import {PaginationResponse} from "@/typings/response/pagination";
@@ -14,22 +14,27 @@ import type {FormInstance} from 'element-plus'
 import type {IClass} from "@/typings/interface/class";
 import {ElMessage} from "element-plus";
 import {useStudentRules} from "@/rules/user/useUserRules";
-import {getClassNamesService, getClassNamesServiceByCollege} from "@/service/classService";
+import {getClassNamesServiceByCollege} from "@/service/classService";
 import {getCollegeNamesService} from "@/service/collegeService";
 import {ICollegeName} from "@/typings/interface/college";
+import SpeedDial from 'primevue/speeddial';
 
-const selectCollege = ref<string>("")
+const imageUrl = ref<string>("")
+const selectedFile = ref(null);
+const selectDisabledCreate = ref<boolean>(true);
 const selectDisabled = ref<boolean>(true);
 const collegeSelects = reactive<ICollegeName[]>([])
 const disabled = ref<boolean>(false)
 const reRender = ref<boolean>(false);
 const ruleFormRef = ref<FormInstance>()
+const visibleCreate = ref<boolean>(false)
 const visibleEdit = ref<boolean>(false)
 const isWatchActive = ref<boolean>(true);
 const search = ref<string>("");
 const classSelects = reactive<Array<IClass>>([]);
 let tableData = reactive<Array<IStudent>>([])
 const pageCount = ref<number>(0)
+const uploadStudentImage = ref(null)
 const tablePages = ref<number>(1)
 const locationOptionsGrade: USER_GRADE[] = [USER_GRADE.ONE, USER_GRADE.TWO, USER_GRADE.THREE, USER_GRADE.FORE]
 const locationOptionsRole = [USER_ROLE.STUDENT, {
@@ -61,6 +66,26 @@ const ruleFormData = reactive<IStudent>({
   roleId: 0,
   college: "",
   id: ""
+})
+
+const ruleFormCreate = reactive<IStudentCreateView>({
+  studentId: "",
+  studentName: "",
+  studentClass: "",
+  studentSex: 18,
+  studentGrade: USER_GRADE.ONE,
+  roleId: USER_ROLE.STUDENT,
+  college: "",
+})
+
+const ruleFormDataCreate = reactive<IStudentCreate>({
+  studentId: "",
+  studentName: "",
+  studentClass: "",
+  studentSex: 18,
+  studentGrade: 1,
+  roleId: 0,
+  college: "",
 })
 
 watchEffect(() => {
@@ -126,11 +151,20 @@ const handleEdit = async (_, row: IStudent) => {
   ruleForm.roleId = row.roleId === 0 ? USER_ROLE.STUDENT : row.roleId === 1 ? USER_ROLE.TEACHER : USER_ROLE.ADMIN
 }
 
-const collegeChange = async () => {
-  const classResponse = await getClassNamesServiceByCollege<IBaseResponse<IClass[]>>(ruleForm.college)
+const collegeChange = async (college: string) => {
+  const classResponse = await getClassNamesServiceByCollege<IBaseResponse<IClass[]>>(college)
   if (classResponse.code === 200) {
     selectDisabled.value = false
     ruleForm.studentClass = classResponse.data[0] ? classResponse.data[0].className : ""
+    classSelects.splice(0, classSelects.length, ...classResponse.data)
+  }
+}
+
+const collegeChangeCreate = async (college: string) => {
+  const classResponse = await getClassNamesServiceByCollege<IBaseResponse<IClass[]>>(college)
+  if (classResponse.code === 200) {
+    selectDisabledCreate.value = false
+    ruleFormCreate.studentClass = classResponse.data[0] ? classResponse.data[0].className : ""
     classSelects.splice(0, classSelects.length, ...classResponse.data)
   }
 }
@@ -186,6 +220,66 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   })
 }
 
+const submitFormCreate = async (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  await formEl.validate(async (valid) => {
+    if (valid) {
+      ruleFormDataCreate.studentId = ruleFormCreate.studentId
+      ruleFormDataCreate.studentName = ruleFormCreate.studentName
+      ruleFormDataCreate.studentClass = ruleFormCreate.studentClass
+      ruleFormDataCreate.studentSex = ruleFormCreate.studentSex
+      ruleFormDataCreate.college = ruleFormCreate.college
+      ruleFormDataCreate.id = ruleFormCreate.id
+      ruleFormDataCreate.roleId = ruleFormCreate.roleId === USER_ROLE.STUDENT ? 0 : ruleFormCreate.roleId === USER_ROLE.TEACHER ? 1 : 2
+      switch (ruleForm.studentGrade) {
+        case USER_GRADE.ONE:
+          ruleFormDataCreate.studentGrade = 1
+          break;
+        case USER_GRADE.TWO:
+          ruleFormDataCreate.studentGrade = 2
+          break;
+        case USER_GRADE.THREE:
+          ruleFormDataCreate.studentGrade = 3
+          break;
+        default:
+          ruleFormDataCreate.studentGrade = 4
+      }
+      const fromDataStudent = new FormData()
+      fromDataStudent.append(
+          "data",
+          new Blob([JSON.stringify(ruleFormDataCreate)], {
+            type: "application/json",
+          })
+      );
+      fromDataStudent.append("iconImage", uploadStudentImage.value);
+      const studentResponse = await incrementStudentService<IBaseResponse<string>>(fromDataStudent)
+      if (studentResponse.code === 200) {
+        reRender.value = !reRender.value
+        visibleCreate.value = false
+        ElMessage({
+          type: 'success',
+          message: studentResponse.data,
+        })
+      } else {
+        ElMessage({
+          type: 'error',
+          message: studentResponse.data,
+        })
+      }
+    } else {
+      ElMessage({
+        type: 'error',
+        message: "请按照提示先填写信息后再提交",
+      })
+    }
+  })
+}
+
+const handleFileChange = (file) => {
+  uploadStudentImage.value = file.raw
+  imageUrl.value = URL.createObjectURL(file.raw);
+};
+
 const deleteStudent = async (_, row: IStudent) => {
   const studentResponse = await deleteStudentService<IBaseResponse<string>>(row.studentId)
   if (studentResponse.code === 200) {
@@ -216,6 +310,42 @@ const resetPassword = async (_, row: IStudent) => {
     })
   }
 }
+
+const closeDrawerCreate = () => {
+  visibleCreate.value = false
+}
+
+const incrementStudent = async () => {
+  visibleCreate.value = true
+  const collegeResponse = await getCollegeNamesService<IBaseResponse<ICollegeName[]>>()
+  if (collegeResponse.code === 200) {
+    collegeSelects.splice(0, collegeSelects.length, ...collegeResponse.data)
+  }
+}
+
+const validateImageType = (rule, value, callback) => {
+  const allowedTypes = [
+    'image/jpeg',
+    'image/png',
+    'image/gif',
+    'image/bmp',
+    'image/webp'
+  ] as string[];
+  if (value && !allowedTypes.includes(value.type)) {
+    callback(new Error('支持格式：JPG/JPEG、PNG、GIF、BMP、WebP'));
+  } else {
+    callback();
+  }
+};
+
+const validateImageSize = (rule, value, callback) => {
+  if (value && value.size / 1024 / 1024 > 2) {
+    callback(new Error('头像大小不能超过2MB'));
+  } else {
+    callback();
+  }
+};
+
 </script>
 
 <template>
@@ -359,7 +489,8 @@ const resetPassword = async (_, row: IStudent) => {
         >
           <el-input v-model="ruleForm.college" disabled>
             <template #append>
-              <el-select v-model="ruleForm.college" :placeholder="null" style="width: 150px" @change="collegeChange">
+              <el-select v-model="ruleForm.college" :placeholder="null" style="width: 150px"
+                         @change="collegeChange(ruleForm.college)">
                 <el-option v-for="item in collegeSelects" :key="item.id" :label="item.collegeName"
                            :value="item.collegeName"/>
               </el-select>
@@ -405,9 +536,134 @@ const resetPassword = async (_, row: IStudent) => {
       </el-form-item>
     </el-form>
   </el-drawer>
+  <el-drawer v-model="visibleCreate" :show-close="false">
+    <template #header="{ close, titleId, titleClass }">
+      <h4 :id="titleId" :class="titleClass">新增学生信息</h4>
+      <el-button type="danger" @click="closeDrawerCreate">
+        <el-icon class="el-icon--left">
+          <IEpCircleCloseFilled/>
+        </el-icon>
+        关闭
+      </el-button>
+    </template>
+    <el-form
+        ref="ruleFormRef"
+        style="max-width: 600px"
+        :rules="useStudentRules"
+        :model="ruleFormCreate"
+        label-width="auto"
+    >
+
+      <el-form-item label="学生照片" :rules="[
+          { required: true, message: '请选择头像', trigger: 'change'},
+          { validator: validateImageType, trigger: 'change' },
+          { validator: validateImageSize, trigger: 'change' },
+      ]">
+        <el-upload
+            class="avatar-uploader"
+            :show-file-list="false"
+            :on-change="handleFileChange">
+          <img v-if="imageUrl" :src="imageUrl" class="avatar" alt=""/>
+          <el-icon v-else class="avatar-uploader-icon">
+            <IEpPlus/>
+          </el-icon>
+        </el-upload>
+      </el-form-item>
+      <el-form-item label="学号" prop="studentId">
+        <el-input v-model="ruleFormCreate.studentId"/>
+      </el-form-item>
+      <el-form-item label="学生名" prop="studentName">
+        <el-input v-model="ruleFormCreate.studentName"/>
+      </el-form-item>
+      <el-form-item label="college" prop="college">
+        <el-tooltip
+            :disabled="disabled"
+            content="此字段根据学院管理动态关联不可手动修改，请点击右侧的选择按钮选择存在的学院"
+            placement="bottom"
+            effect="light"
+        >
+          <el-input v-model="ruleFormCreate.college" disabled>
+            <template #append>
+              <el-select v-model="ruleFormCreate.college" :placeholder="null" style="width: 150px"
+                         @change="collegeChangeCreate(ruleFormCreate.college)">
+                <el-option v-for="item in collegeSelects" :key="item.id" :label="item.collegeName"
+                           :value="item.collegeName"/>
+              </el-select>
+            </template>
+          </el-input>
+        </el-tooltip>
+      </el-form-item>
+      <el-form-item label="学生班级" prop="studentClass">
+        <el-tooltip
+            :disabled="disabled"
+            content="此字段根据班级管理动态关联不可手动修改，请点击右侧的选择按钮选择存在的班级,请选择学院后再选择班级"
+            placement="bottom"
+            effect="light">
+          <el-input
+              disabled
+              v-model="ruleFormCreate.studentClass"
+              placeholder="Please input"
+              class="input-with-select"
+          >
+            <template #append>
+              <el-select :disabled="selectDisabledCreate" v-model="ruleFormCreate.studentClass" placeholder="Select"
+                         style="width: 200px">
+                <el-option v-for="item in classSelects" :key="item.classId" :label="item.className"
+                           :value="item.className"/>
+              </el-select>
+            </template>
+          </el-input>
+        </el-tooltip>
+      </el-form-item>
+      <el-form-item label="学生年龄" prop="studentSex">
+        <el-input v-model.number="ruleFormCreate.studentSex"/>
+      </el-form-item>
+      <el-form-item label="学生年级" prop="studentGrade">
+        <el-segmented style="width: 100%" v-model="ruleFormCreate.studentGrade" :options="locationOptionsGrade"/>
+      </el-form-item>
+      <el-form-item label="级别" prop="location">
+        <el-segmented style="width: 100%" v-model="ruleFormCreate.roleId" :options="locationOptionsRole"/>
+      </el-form-item>
+      <el-form-item>
+        <el-button style="width: 100%" type="primary" round plain @click="submitFormCreate(ruleFormRef)">
+          提交
+        </el-button>
+      </el-form-item>
+    </el-form>
+  </el-drawer>
+  <SpeedDial @click="incrementStudent" direction="right" :style="{ position: 'absolute', right: 10, bottom: 400 }"
+             :buttonProps="{ severity: 'warn', rounded: true }"/>
 </template>
+<style>
+.avatar-uploader .el-upload {
+  border: 1px dashed var(--el-border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: var(--el-transition-duration-fast);
+}
+
+.avatar-uploader .el-upload:hover {
+  border-color: var(--el-color-primary);
+}
+
+.el-icon.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  text-align: center;
+}
+</style>
 
 <style scoped lang="less">
+.avatar-uploader .avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
+
 .student-container {
   width: 100%;
   height: 100%;

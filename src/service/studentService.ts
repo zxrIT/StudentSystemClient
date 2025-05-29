@@ -1,5 +1,5 @@
 import httpAxios from "@/http";
-import {IStudent} from "@/typings/interface/student";
+import {IStudent, IStudentCreate} from "@/typings/interface/student";
 
 export function getStudentService<T>(quantity: number, page: number): Promise<T> {
     return httpAxios.get<T, T>(`/user/student/getStudent/${quantity}/${page}`).then((response: T) => {
@@ -36,6 +36,14 @@ export function resetPasswordService<T>(studentId: string): Promise<T> {
 
 export function updateStudentService<T>(student: IStudent): Promise<T> {
     return httpAxios.put<T, T>("/user/student/updateStudent", student).then((response: T) => {
+        return response;
+    }, (error) => {
+        return Promise.reject(error);
+    })
+}
+
+export function incrementStudentService<T>(data: FormData): Promise<T> {
+    return httpAxios.post<T, T>("/user/student/incrementStudent", data).then((response: T) => {
         return response;
     }, (error) => {
         return Promise.reject(error);

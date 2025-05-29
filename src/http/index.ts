@@ -4,9 +4,6 @@ import type {AxiosInstance, AxiosResponse, CreateAxiosDefaults, InternalAxiosReq
 const httpAxios: AxiosInstance = axios.create({
     baseURL: "http://localhost:10000",
     timeout: 5000,
-    headers: {
-        "content-type": "application/json",
-    }
 } as CreateAxiosDefaults)
 
 httpAxios.interceptors.request.use((config: InternalAxiosRequestConfig) => {

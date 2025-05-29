@@ -285,6 +285,48 @@
   resolved "https://registry.npmmirror.com/@sxzz/popperjs-es/-/popperjs-es-2.11.7.tgz#a7f69e3665d3da9b115f9e71671dae1b97e13671"
   integrity sha512-Ccy0NlLkzr0Ex2FKvh2X+OyERHXJ88XJ1MXtsI9y9fGexlaXaVTPzBCRBwIxFkORuOb+uBqeu+RqnpgYTEZRUQ==
 
+"@primeuix/styled@^0.6.1":
+  version "0.6.3"
+  resolved "https://registry.npmmirror.com/@primeuix/styled/-/styled-0.6.3.tgz#00bc6e208fddec0454fa4fd962e7a52b9213c266"
+  integrity sha512-cW8XbJ1wWN9kC7lDhGpgTZI3FnUm68tw34BRm8C+z6T3X/Ayw+kfxlApxNEafipjWYiwNM9L+TUOHumbsESjqw==
+  dependencies:
+    "@primeuix/utils" "^0.5.3"
+
+"@primeuix/styles@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.npmmirror.com/@primeuix/styles/-/styles-1.1.1.tgz#67689a84e3bc64d2433e1a445fdf0be5448019ab"
+  integrity sha512-oguFY2Rs4ZqdcFqEKxBt2d8trTkAjJ5BGTaDV0zbwdqRCRcZp9+di3K3Wv57CW/+tFDA0z1Dg7Dpm7wmkOII9Q==
+  dependencies:
+    "@primeuix/styled" "^0.6.1"
+
+"@primeuix/themes@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.npmmirror.com/@primeuix/themes/-/themes-1.1.1.tgz#3d04b6d06738252f3133776b411bfa527cd97c29"
+  integrity sha512-fcHPLfw73cOApPovtA+D9wf3N7FBruU/6oTRt+AcTK754mHhnTza9kC2jiFQfq5HnWF0u0J/5Pb943fNsnxVVA==
+  dependencies:
+    "@primeuix/styled" "^0.6.1"
+
+"@primeuix/utils@^0.5.3":
+  version "0.5.3"
+  resolved "https://registry.npmmirror.com/@primeuix/utils/-/utils-0.5.3.tgz#3a6f597f88e6e9ff8993e81a25c2dfcdd787fd71"
+  integrity sha512-7SGh7734wcF1/uK6RzO6Z6CBjGQ97GDHfpyl2F1G/c7R0z9hkT/V72ypDo82AWcCS7Ta07oIjDpOCTkSVZuEGQ==
+
+"@primevue/core@4.3.4":
+  version "4.3.4"
+  resolved "https://registry.npmmirror.com/@primevue/core/-/core-4.3.4.tgz#5dcfa16c567f69a1f61792f26c5b35fb7a7d8b3e"
+  integrity sha512-SIwQ8CqL/tiDYRW2ShiwO3LeFV5gWfymwzwbI7kn2p8BFPCklqGbJfIqSdvAQgUTFR2fEsI7EKtPBksTX8MlEg==
+  dependencies:
+    "@primeuix/styled" "^0.6.1"
+    "@primeuix/utils" "^0.5.3"
+
+"@primevue/icons@4.3.4":
+  version "4.3.4"
+  resolved "https://registry.npmmirror.com/@primevue/icons/-/icons-4.3.4.tgz#fc74cc72dbfdfe4e80bb6f0e45cadf9dd8c04487"
+  integrity sha512-pCDOBl9LrGdEKsfCOzqzTDimSHa0ijn3p4QTeGCqKEoN0DjtxwsfejTFisiEkVQq6es3EA2oatAFT4gD2CJZDQ==
+  dependencies:
+    "@primeuix/utils" "^0.5.3"
+    "@primevue/core" "4.3.4"
+
 "@rollup/rollup-android-arm-eabi@4.40.2":
   version "4.40.2"
   resolved "https://registry.npmmirror.com/@rollup/rollup-android-arm-eabi/-/rollup-android-arm-eabi-4.40.2.tgz#c228d00a41f0dbd6fb8b7ea819bbfbf1c1157a10"
@@ -1489,6 +1531,17 @@ postcss@^8.5.3:
     nanoid "^3.3.8"
     picocolors "^1.1.1"
     source-map-js "^1.2.1"
+
+primevue@^4.3.4:
+  version "4.3.4"
+  resolved "https://registry.npmmirror.com/primevue/-/primevue-4.3.4.tgz#481f8e1e5062d58f4ef32c8fa52c24be9bc0152e"
+  integrity sha512-zYQFBXI7BIEglc99MzNmQ/huZnzUYzF2JXQT3OFFUIUfz6aHW5hCdjyYPoThDICjKYAladqvvLkW7XQT+Kf08Q==
+  dependencies:
+    "@primeuix/styled" "^0.6.1"
+    "@primeuix/styles" "^1.1.1"
+    "@primeuix/utils" "^0.5.3"
+    "@primevue/core" "4.3.4"
+    "@primevue/icons" "4.3.4"
 
 proxy-from-env@^1.1.0:
   version "1.1.0"
