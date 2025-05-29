@@ -6,4 +6,5 @@ export interface IStudentResponse {
     studentIcon: string;
     studentGrade: number;
     roleId: number;
+    college: string
 }

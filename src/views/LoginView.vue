@@ -4,7 +4,7 @@ import {USER_ROLE} from "@/typings/enum/user";
 import {IUser} from "@/typings/interface/base";
 import {ElMessage, FormInstance} from "element-plus";
 import {useDark, useToggle} from '@vueuse/core'
-import {captchaService, studentLoginService} from "@/service/authenticationService";
+import {captchaService, studentLoginService, teacherLoginService} from "@/service/authenticationService";
 import {IBaseResponse} from "@/typings/response/baseResponse";
 import {ILoginResponse, ILoginResponseGenerateCaptcha} from "@/typings/response/entity/loginResponse";
 import {useLocalStorage} from "@/hooks/useLocalStorage";
@@ -49,17 +49,35 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate(async (valid, _) => {
         if (valid) {
-          const loginStudentResponse = await studentLoginService<IBaseResponse<ILoginResponse | string>>(ruleFrom.value)
-          if (loginStudentResponse.code === 200) {
-            setStorage("studentSystem-token", (loginStudentResponse.data as ILoginResponse).token)
-            setStorage("studentSystem-userInfo", JSON.stringify(loginStudentResponse.data as ILoginResponse))
-            userInfoStore.changeUserInfo(loginStudentResponse.data as ILoginResponse)
-            ElMessage.success("登录成功")
-            await router.push("/home")
-          } else {
-            reGenerateCaptcha.value = !reGenerateCaptcha.value
-            ruleFrom.value.code = ""
-            ElMessage.error(loginStudentResponse.data)
+          switch (selectRole.value) {
+            case USER_ROLE.STUDENT:
+              const loginStudentResponse = await studentLoginService<IBaseResponse<ILoginResponse | string>>(ruleFrom.value)
+              if (loginStudentResponse.code === 200) {
+                setStorage("studentSystem-token", (loginStudentResponse.data as ILoginResponse).token)
+                setStorage("studentSystem-userInfo", JSON.stringify(loginStudentResponse.data as ILoginResponse))
+                userInfoStore.changeUserInfo(loginStudentResponse.data as ILoginResponse)
+                ElMessage.success("登录成功")
+                await router.push("/")
+              } else {
+                reGenerateCaptcha.value = !reGenerateCaptcha.value
+                ruleFrom.value.code = ""
+                ElMessage.error(loginStudentResponse.data)
+              }
+              break;
+            case USER_ROLE.TEACHER:
+              const loginTeacherResponse = await teacherLoginService<IBaseResponse<ILoginResponse | string>>(ruleFrom.value)
+              if (loginTeacherResponse.code === 200) {
+                setStorage("studentSystem-token", (loginTeacherResponse.data as ILoginResponse).token)
+                setStorage("studentSystem-userInfo", JSON.stringify(loginTeacherResponse.data as ILoginResponse))
+                userInfoStore.changeUserInfo(loginTeacherResponse.data as ILoginResponse)
+                ElMessage.success("登录成功")
+                await router.push("/")
+              } else {
+                reGenerateCaptcha.value = !reGenerateCaptcha.value
+                ruleFrom.value.code = ""
+                ElMessage.error(loginTeacherResponse.data)
+              }
+              break;
           }
         } else {
           ElMessage({

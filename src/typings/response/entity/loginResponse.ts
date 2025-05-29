@@ -10,4 +10,6 @@ export interface ILoginResponse {
     roleId: number;
     icon: string;
     className?: string;
+    job?: string;
+    college?: string
 }

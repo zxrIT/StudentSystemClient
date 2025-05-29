@@ -5,7 +5,8 @@ export interface IStudent {
     studentSex: number;
     studentIcon: string;
     studentGrade: number;
-    roleId: number
+    roleId: number;
+    college: string
 }
 
 export interface IStudentView {
@@ -15,7 +16,8 @@ export interface IStudentView {
     studentSex: number;
     studentIcon: string;
     studentGrade: string;
-    roleId: string
+    roleId: string,
+    college: string
 }
 
 export interface IStudentSimple {

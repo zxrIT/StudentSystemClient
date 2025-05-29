@@ -1,5 +1,5 @@
 export enum SYSTEM_ENUM_INTERNATION {
-    ZH = "zh-cn",
+    ZH = "zh",
     EN = "en"
 }
 

@@ -11,4 +11,6 @@ export interface IUserInfo {
     roleId: number
     icon: string;
     className?: string;
+    job?: string;
+    college?: string
 }

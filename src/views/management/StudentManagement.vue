@@ -40,7 +40,8 @@ const ruleForm = reactive<IStudentView>({
   studentSex: 18,
   studentIcon: "",
   studentGrade: 1,
-  roleId: ""
+  roleId: "",
+  college: ""
 })
 
 const ruleFormData = reactive<IStudent>({
@@ -50,7 +51,8 @@ const ruleFormData = reactive<IStudent>({
   studentSex: 18,
   studentIcon: "",
   studentGrade: 1,
-  roleId: 0
+  roleId: 0,
+  college: ""
 })
 
 watchEffect(() => {
@@ -98,6 +100,7 @@ const handleEdit = async (_, row: IStudent) => {
   ruleForm.studentName = row.studentName
   ruleForm.studentClass = row.studentClass
   ruleForm.studentSex = row.studentSex
+  ruleForm.college = row.college
   switch (row.studentGrade) {
     case 1:
       ruleForm.studentGrade = USER_GRADE.ONE
@@ -126,6 +129,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       ruleFormData.studentName = ruleForm.studentName
       ruleFormData.studentClass = ruleForm.studentClass
       ruleFormData.studentSex = ruleForm.studentSex
+      ruleFormData.college = ruleForm.college
       ruleFormData.roleId = ruleForm.roleId === USER_ROLE.STUDENT ? 0 : ruleForm.roleId === USER_ROLE.TEACHER ? 1 : 2
       switch (ruleForm.studentGrade) {
         case USER_GRADE.ONE:
@@ -201,7 +205,7 @@ const resetPassword = async (_, row: IStudent) => {
         <el-table :data="tableData"
                   style="width: 99%" height="100%" :fit="true"
                   highlight-current-row>
-          <el-table-column align="center" fixed prop="studentIcon" label="studentIcon" min-width="15%">
+          <el-table-column align="center" fixed prop="studentIcon" label="studentIcon" width="150">
             <template #default="scope">
               <el-avatar :size="50" shape="circle" :src="
                 scope.row.studentIcon===undefined || scope.row.studentIcon===null||scope.row.studentIcon.length===0?
@@ -210,10 +214,11 @@ const resetPassword = async (_, row: IStudent) => {
               />
             </template>
           </el-table-column>
-          <el-table-column align="center" prop="studentId" label="studentId" min-width="13%"/>
-          <el-table-column align="center" prop="studentName" label="studentName" min-width="14%"/>
-          <el-table-column align="center" prop="studentClass" label="studentClass" min-width="13%"/>
-          <el-table-column align="center" label="password" min-width="13%">
+          <el-table-column fixed align="center" prop="college" label="college" width="150"/>
+          <el-table-column align="center" prop="studentId" label="studentId" width="150"/>
+          <el-table-column align="center" prop="studentName" label="studentName" width="150"/>
+          <el-table-column align="center" prop="studentClass" label="studentClass" width="150"/>
+          <el-table-column align="center" label="password" width="150">
             <template #default="scope">
               <el-popconfirm
                   @confirm="resetPassword(scope.$index, scope.row)"
@@ -227,7 +232,7 @@ const resetPassword = async (_, row: IStudent) => {
               </el-popconfirm>
             </template>
           </el-table-column>
-          <el-table-column align="center" prop="roleId" label="roleId" min-width="10%">
+          <el-table-column align="center" prop="roleId" label="roleId" width="150">
             <template #default="scope">
               <el-tag :type="scope.row.roleId === 0 ?'primary':scope.row.roleId === 1?'warning':'danger'">
                 {{
@@ -236,12 +241,12 @@ const resetPassword = async (_, row: IStudent) => {
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column align="center" prop="studentGrade" label="studentGrade" min-width="13%">
+          <el-table-column align="center" prop="studentGrade" label="studentGrade" width="150">
             <template #default="scope">
               大学{{ scope.row.studentGrade }}年级
             </template>
           </el-table-column>
-          <el-table-column align="center" min-width="25%">
+          <el-table-column fixed="right" align="center" width="150">
             <template #header>
               <el-dropdown split-button @command="command">
                 <el-input v-model="search" size="small" placeholder="请输入关键词"/>
@@ -275,7 +280,7 @@ const resetPassword = async (_, row: IStudent) => {
                 </template>
               </el-popconfirm>
             </template>
-          </el-table-column>
+          </el-table-column >
         </el-table>
       </div>
       <div class="pagination-container">
