@@ -14,8 +14,14 @@ import type {FormInstance} from 'element-plus'
 import type {IClass} from "@/typings/interface/class";
 import {ElMessage} from "element-plus";
 import {useStudentRules} from "@/rules/user/useUserRules";
-import {getClassNamesService} from "@/service/classService";
+import {getClassNamesService, getClassNamesServiceByCollege} from "@/service/classService";
+import {getCollegeNamesService} from "@/service/collegeService";
+import {ICollegeName} from "@/typings/interface/college";
 
+const selectCollege = ref<string>("")
+const selectDisabled = ref<boolean>(true);
+const collegeSelects = reactive<ICollegeName[]>([])
+const disabled = ref<boolean>(false)
 const reRender = ref<boolean>(false);
 const ruleFormRef = ref<FormInstance>()
 const visibleEdit = ref<boolean>(false)
@@ -41,7 +47,8 @@ const ruleForm = reactive<IStudentView>({
   studentIcon: "",
   studentGrade: 1,
   roleId: "",
-  college: ""
+  college: "",
+  id: "",
 })
 
 const ruleFormData = reactive<IStudent>({
@@ -52,7 +59,8 @@ const ruleFormData = reactive<IStudent>({
   studentIcon: "",
   studentGrade: 1,
   roleId: 0,
-  college: ""
+  college: "",
+  id: ""
 })
 
 watchEffect(() => {
@@ -90,9 +98,9 @@ const command = async (payload: USER_SELECT) => {
 }
 
 const handleEdit = async (_, row: IStudent) => {
-  const classResponse = await getClassNamesService<IBaseResponse<IClass[]>>()
-  if (classResponse.code === 200) {
-    classSelects.splice(0, classSelects.length, ...classResponse.data)
+  const collegeResponse = await getCollegeNamesService<IBaseResponse<ICollegeName[]>>()
+  if (collegeResponse.code === 200) {
+    collegeSelects.splice(0, collegeSelects.length, ...collegeResponse.data)
   }
   visibleEdit.value = true
   ruleForm.studentIcon = row.studentIcon
@@ -101,6 +109,7 @@ const handleEdit = async (_, row: IStudent) => {
   ruleForm.studentClass = row.studentClass
   ruleForm.studentSex = row.studentSex
   ruleForm.college = row.college
+  ruleForm.id = row.id
   switch (row.studentGrade) {
     case 1:
       ruleForm.studentGrade = USER_GRADE.ONE
@@ -117,6 +126,15 @@ const handleEdit = async (_, row: IStudent) => {
   ruleForm.roleId = row.roleId === 0 ? USER_ROLE.STUDENT : row.roleId === 1 ? USER_ROLE.TEACHER : USER_ROLE.ADMIN
 }
 
+const collegeChange = async () => {
+  const classResponse = await getClassNamesServiceByCollege<IBaseResponse<IClass[]>>(ruleForm.college)
+  if (classResponse.code === 200) {
+    selectDisabled.value = false
+    ruleForm.studentClass = classResponse.data[0] ? classResponse.data[0].className : ""
+    classSelects.splice(0, classSelects.length, ...classResponse.data)
+  }
+}
+
 const closeDrawer = () => {
   visibleEdit.value = false
 }
@@ -130,6 +148,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       ruleFormData.studentClass = ruleForm.studentClass
       ruleFormData.studentSex = ruleForm.studentSex
       ruleFormData.college = ruleForm.college
+      ruleFormData.id = ruleForm.id
       ruleFormData.roleId = ruleForm.roleId === USER_ROLE.STUDENT ? 0 : ruleForm.roleId === USER_ROLE.TEACHER ? 1 : 2
       switch (ruleForm.studentGrade) {
         case USER_GRADE.ONE:
@@ -147,6 +166,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       const studentResponse = await updateStudentService<IBaseResponse<string>>(ruleFormData)
       if (studentResponse.code === 200) {
         reRender.value = !reRender.value
+        visibleEdit.value = false
         ElMessage({
           type: 'success',
           message: studentResponse.data,
@@ -205,7 +225,7 @@ const resetPassword = async (_, row: IStudent) => {
         <el-table :data="tableData"
                   style="width: 99%" height="100%" :fit="true"
                   highlight-current-row>
-          <el-table-column align="center" fixed prop="studentIcon" label="studentIcon" width="150">
+          <el-table-column align="center" fixed="left" prop="studentIcon" label="studentIcon" min-width="11%">
             <template #default="scope">
               <el-avatar :size="50" shape="circle" :src="
                 scope.row.studentIcon===undefined || scope.row.studentIcon===null||scope.row.studentIcon.length===0?
@@ -214,11 +234,10 @@ const resetPassword = async (_, row: IStudent) => {
               />
             </template>
           </el-table-column>
-          <el-table-column fixed align="center" prop="college" label="college" width="150"/>
-          <el-table-column align="center" prop="studentId" label="studentId" width="150"/>
-          <el-table-column align="center" prop="studentName" label="studentName" width="150"/>
-          <el-table-column align="center" prop="studentClass" label="studentClass" width="150"/>
-          <el-table-column align="center" label="password" width="150">
+          <el-table-column align="center" prop="studentId" label="studentId" min-width="10%"/>
+          <el-table-column align="center" prop="studentName" label="studentName" min-width="10%"/>
+          <el-table-column align="center" prop="studentClass" label="studentClass" min-width="10%"/>
+          <el-table-column align="center" label="password" min-width="8%">
             <template #default="scope">
               <el-popconfirm
                   @confirm="resetPassword(scope.$index, scope.row)"
@@ -232,7 +251,7 @@ const resetPassword = async (_, row: IStudent) => {
               </el-popconfirm>
             </template>
           </el-table-column>
-          <el-table-column align="center" prop="roleId" label="roleId" width="150">
+          <el-table-column align="center" prop="roleId" label="roleId" min-width="8%">
             <template #default="scope">
               <el-tag :type="scope.row.roleId === 0 ?'primary':scope.row.roleId === 1?'warning':'danger'">
                 {{
@@ -241,12 +260,12 @@ const resetPassword = async (_, row: IStudent) => {
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column align="center" prop="studentGrade" label="studentGrade" width="150">
+          <el-table-column align="center" prop="studentGrade" label="studentGrade" min-width="11%">
             <template #default="scope">
               大学{{ scope.row.studentGrade }}年级
             </template>
           </el-table-column>
-          <el-table-column fixed="right" align="center" width="150">
+          <el-table-column fixed="right" align="center" min-width="20%">
             <template #header>
               <el-dropdown split-button @command="command">
                 <el-input v-model="search" size="small" placeholder="请输入关键词"/>
@@ -280,7 +299,7 @@ const resetPassword = async (_, row: IStudent) => {
                 </template>
               </el-popconfirm>
             </template>
-          </el-table-column >
+          </el-table-column>
         </el-table>
       </div>
       <div class="pagination-container">
@@ -315,25 +334,60 @@ const resetPassword = async (_, row: IStudent) => {
                 ruleForm.studentIcon"
         />
       </el-form-item>
+      <el-form-item label="id" prop="id">
+        <el-tooltip
+            :disabled="disabled"
+            content="此字段为学生的唯一标识不可修改"
+            placement="bottom"
+            effect="light"
+        >
+          <el-input v-model="ruleForm.id" disabled/>
+        </el-tooltip>
+      </el-form-item>
       <el-form-item label="学号" prop="studentId">
         <el-input v-model="ruleForm.studentId"/>
       </el-form-item>
       <el-form-item label="学生名" prop="studentName">
         <el-input v-model="ruleForm.studentName"/>
       </el-form-item>
-      <el-form-item label="学生班级" prop="studentClass">
-        <el-input
-            v-model="ruleForm.studentClass"
-            placeholder="Please input"
-            class="input-with-select"
+      <el-form-item label="college" prop="college">
+        <el-tooltip
+            :disabled="disabled"
+            content="此字段根据学院管理动态关联不可手动修改，请点击右侧的选择按钮选择存在的学院"
+            placement="bottom"
+            effect="light"
         >
-          <template #append>
-            <el-select v-model="ruleForm.studentClass" placeholder="Select" style="width: 200px">
-              <el-option v-for="item in classSelects" :key="item.classId" :label="item.className"
-                         :value="item.className"/>
-            </el-select>
-          </template>
-        </el-input>
+          <el-input v-model="ruleForm.college" disabled>
+            <template #append>
+              <el-select v-model="ruleForm.college" :placeholder="null" style="width: 150px" @change="collegeChange">
+                <el-option v-for="item in collegeSelects" :key="item.id" :label="item.collegeName"
+                           :value="item.collegeName"/>
+              </el-select>
+            </template>
+          </el-input>
+        </el-tooltip>
+      </el-form-item>
+      <el-form-item label="学生班级" prop="studentClass">
+        <el-tooltip
+            :disabled="disabled"
+            content="此字段根据班级管理动态关联不可手动修改，请点击右侧的选择按钮选择存在的班级,请选择学院后再选择班级"
+            placement="bottom"
+            effect="light">
+          <el-input
+              disabled
+              v-model="ruleForm.studentClass"
+              placeholder="Please input"
+              class="input-with-select"
+          >
+            <template #append>
+              <el-select :disabled="selectDisabled" v-model="ruleForm.studentClass" placeholder="Select"
+                         style="width: 200px">
+                <el-option v-for="item in classSelects" :key="item.classId" :label="item.className"
+                           :value="item.className"/>
+              </el-select>
+            </template>
+          </el-input>
+        </el-tooltip>
       </el-form-item>
       <el-form-item label="学生年龄" prop="studentSex">
         <el-input v-model.number="ruleForm.studentSex"/>
@@ -361,7 +415,7 @@ const resetPassword = async (_, row: IStudent) => {
   flex-direction: column;
 
   .table-container {
-    width: 100%;
+    width: 99%;
     height: 80%;
   }
 
