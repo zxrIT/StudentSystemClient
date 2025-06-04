@@ -12,7 +12,9 @@ import {ICollege} from "@/typings/interface/college";
 import {useCollegeRules} from "@/rules/user/useCollegeRules";
 import {ElMessage, FormInstance} from 'element-plus'
 import SpeedDial from "primevue/speeddial";
+import {useUserInfoStore} from "@/store/storeHooks/userInfoStore";
 
+const userInfoStore = useUserInfoStore()
 const visibleCreate = ref<boolean>(false);
 const ruleFormRef = ref<FormInstance>()
 const reRender = ref<boolean>(false);
@@ -154,27 +156,27 @@ const changExistence = async (_, row: ICollege) => {
         <el-card class="card">
           <el-row>
             <el-col :span="4">
-              <el-tag type="warning" style="margin-bottom: 2px">电气信息工程学院</el-tag>
-              <el-tag type="primary">你好：曾祥瑞</el-tag>
+              <el-tag type="warning" style="margin-bottom: 2px">{{userInfoStore.userInfoStore.college}}</el-tag>
+              <el-tag type="primary">你好：{{ userInfoStore.userInfoStore.name}}</el-tag>
             </el-col>
             <el-col :span="4">
-              <el-statistic title="学院教师人数" :value="268"/>
+              <el-statistic title="学校教师人数" :value="268"/>
             </el-col>
             <el-col :span="4">
               <el-statistic :value="138">
                 <template #title>
                   <div style="display: inline-flex; align-items: center">
-                    授课数量
+                    学校授课数量
                     <el-icon style="margin-left: 4px" :size="12">
                       <IEpCollection/>
                     </el-icon>
                   </div>
                 </template>
-                <template #suffix>/100</template>
+                <template #suffix>/1000</template>
               </el-statistic>
             </el-col>
             <el-col :span="4">
-              <el-statistic title="学院学生人数" :value="outputValue"/>
+              <el-statistic title="学校学生人数" :value="outputValue"/>
             </el-col>
             <el-col :span="4">
               <el-statistic title="班级数" :value="562">

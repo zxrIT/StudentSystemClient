@@ -7,7 +7,7 @@ import {SYSTEM_ENUM_INTERNATION, SYSTEM_ENUM_TOPIC} from "@/typings/enum/systemE
 import {useUserInfoStore} from "@/store/storeHooks/userInfoStore";
 import {ref, watch} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {USER_ROLE} from "../../typings/enum/user";
+import {TEACHER_JOB, USER_ROLE} from "@/typings/enum/user";
 
 const {t, locale} = useI18n()
 const systemStore = useSystemStore()
@@ -69,18 +69,32 @@ watch(isDark, (newValue: boolean) => {
                     alt="github"/>
         </el-tooltip>
         <el-tag style=" height: 40px;width: 150px;flex-shrink: 0;" type="warning">
-          {{ '电气信息工程学院' }}
+          {{ userInfoStore.userInfoStore.college }}
         </el-tag>
         <el-tag
-            v-show="userInfoStore.userInfoStore.className!==undefined && userInfoStore.userInfoStore.className!==null"
+            v-show="userInfoStore.userInfoStore.loginType===1"
             style=" height: 40px;width: 100px;flex-shrink: 0;">
           {{ userInfoStore.userInfoStore.className }}
         </el-tag>
-        <el-tag style=" height: 40px;width: 50px;flex-shrink: 0;" type="danger">
+        <el-tag
+            v-show="userInfoStore.userInfoStore.loginType===2"
+            style=" height: 40px;width: 100px;flex-shrink: 0;">
+          {{
+            userInfoStore.userInfoStore.job === 0 ? TEACHER_JOB.LECTURER : userInfoStore.userInfoStore.job === 1 ?
+                TEACHER_JOB.ASSOCIATE_PROFESSOR : TEACHER_JOB.PROFESSOR
+          }}
+        </el-tag>
+        <el-tag v-show="userInfoStore.userInfoStore.loginType===1|| userInfoStore.userInfoStore.loginType===3"
+                style=" height: 40px;width: 50px;flex-shrink: 0;"
+                type="danger">
           {{
             userInfoStore.userInfoStore.roleId === 0 ? USER_ROLE.STUDENT : userInfoStore.userInfoStore.roleId === 1 ?
                 USER_ROLE.TEACHER : USER_ROLE.ADMIN
           }}
+        </el-tag>
+        <el-tag v-show="userInfoStore.userInfoStore.loginType===2" style=" height: 40px;width: 50px;flex-shrink: 0;"
+                type="danger">
+          教师
         </el-tag>
         <el-avatar class="user-avatar" shape="circle" :src="
                 userInfoStore.userInfoStore.icon===undefined ||  userInfoStore.userInfoStore.icon===null?

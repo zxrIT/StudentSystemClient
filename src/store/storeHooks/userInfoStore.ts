@@ -3,6 +3,7 @@ import {IUserInfo} from "@/typings/interface/base";
 
 export const useUserInfoStore = defineStore("userInfoStore", () => {
     const userInfoStore = reactive<IUserInfo>({
+        loginType: 1,
         name: "",
         id: "",
         token: "",
@@ -14,6 +15,7 @@ export const useUserInfoStore = defineStore("userInfoStore", () => {
     })
 
     const resetUserInfo = () => {
+        userInfoStore.loginType = 1;
         userInfoStore.name = ""
         userInfoStore.token = ""
         userInfoStore.roleId = 0;
@@ -25,7 +27,7 @@ export const useUserInfoStore = defineStore("userInfoStore", () => {
     }
 
     const changeUserInfo = (userInfo: IUserInfo) => {
-        console.log(userInfo)
+        userInfoStore.loginType = userInfo.loginType;
         userInfoStore.id = userInfo.id
         userInfoStore.roleId = userInfo.roleId
         userInfoStore.token = userInfo.token

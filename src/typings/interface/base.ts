@@ -5,6 +5,7 @@ export interface IUser {
 }
 
 export interface IUserInfo {
+    loginType: number,
     token: string
     id: string,
     name: string

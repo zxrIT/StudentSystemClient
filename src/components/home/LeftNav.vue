@@ -1,12 +1,8 @@
 <script setup lang="ts">
 import {SYSTEM_LEFT_NAV} from "@/typings/enum/systemEnum";
+import {useUserInfoStore} from "@/store/storeHooks/userInfoStore";
 
-const handleOpen = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-}
-const handleClose = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-}
+const userInfoStore = useUserInfoStore()
 </script>
 
 <template>
@@ -20,29 +16,39 @@ const handleClose = (key: string, keyPath: string[]) => {
               @close="handleClose"
               router
           >
-            <el-sub-menu :index="SYSTEM_LEFT_NAV.HOME">
+            <el-sub-menu v-if="userInfoStore.userInfoStore.loginType===3&& userInfoStore.userInfoStore.roleId===2"
+                         :index="SYSTEM_LEFT_NAV.HOME">
               <template #title>
                 <el-icon>
                   <IEpUser/>
                 </el-icon>
                 <span>{{ $t("message.leftNav.PersonnelManagement") }}</span>
               </template>
-              <el-menu-item :index="SYSTEM_LEFT_NAV.STUDENT">{{ $t("message.leftNav.StudentManagement") }}</el-menu-item>
-              <el-menu-item :index="SYSTEM_LEFT_NAV.TEACHER">{{ $t("message.leftNav.TeacherManagement") }}</el-menu-item>
+              <el-menu-item :index="SYSTEM_LEFT_NAV.STUDENT">{{
+                  $t("message.leftNav.StudentManagement")
+                }}
+              </el-menu-item>
+              <el-menu-item :index="SYSTEM_LEFT_NAV.TEACHER">{{
+                  $t("message.leftNav.TeacherManagement")
+                }}
+              </el-menu-item>
             </el-sub-menu>
-            <el-menu-item :index="SYSTEM_LEFT_NAV.CURRICULUM">
+            <el-menu-item v-if="userInfoStore.userInfoStore.loginType===3&& userInfoStore.userInfoStore.roleId===2"
+                          :index="SYSTEM_LEFT_NAV.CURRICULUM">
               <el-icon>
                 <IEpCollection/>
               </el-icon>
               <span>{{ $t("message.leftNav.CurriculumManagement") }}</span>
             </el-menu-item>
-            <el-menu-item :index="SYSTEM_LEFT_NAV.CLASS">
+            <el-menu-item v-if="userInfoStore.userInfoStore.loginType===3&& userInfoStore.userInfoStore.roleId===2"
+                          :index="SYSTEM_LEFT_NAV.CLASS">
               <el-icon>
                 <IEpCoin/>
               </el-icon>
               <span>{{ $t("message.leftNav.ClassManagement") }}</span>
             </el-menu-item>
-            <el-menu-item :index="SYSTEM_LEFT_NAV.COLLEGE">
+            <el-menu-item v-if="userInfoStore.userInfoStore.loginType===3&& userInfoStore.userInfoStore.roleId===2"
+                          :index="SYSTEM_LEFT_NAV.COLLEGE">
               <el-icon>
                 <IEpReading/>
               </el-icon>

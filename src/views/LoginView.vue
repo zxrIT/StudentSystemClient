@@ -4,7 +4,12 @@ import {USER_ROLE} from "@/typings/enum/user";
 import {IUser} from "@/typings/interface/base";
 import {ElMessage, FormInstance} from "element-plus";
 import {useDark, useToggle} from '@vueuse/core'
-import {captchaService, studentLoginService, teacherLoginService} from "@/service/authenticationService";
+import {
+  adminLoginService,
+  captchaService,
+  studentLoginService,
+  teacherLoginService
+} from "@/service/authenticationService";
 import {IBaseResponse} from "@/typings/response/baseResponse";
 import {ILoginResponse, ILoginResponseGenerateCaptcha} from "@/typings/response/entity/loginResponse";
 import {useLocalStorage} from "@/hooks/useLocalStorage";
@@ -78,6 +83,19 @@ const submitForm = async (formEl: FormInstance | undefined) => {
                 ElMessage.error(loginTeacherResponse.data)
               }
               break;
+            case USER_ROLE.ADMIN:
+              const loginAdminResponse = await adminLoginService<IBaseResponse<ILoginResponse | string>>(ruleFrom.value)
+              if (loginAdminResponse.code === 200) {
+                setStorage("studentSystem-token", (loginAdminResponse.data as ILoginResponse).token)
+                setStorage("studentSystem-userInfo", JSON.stringify(loginAdminResponse.data as ILoginResponse))
+                userInfoStore.changeUserInfo(loginAdminResponse.data as ILoginResponse)
+                ElMessage.success("登录成功")
+                await router.push("/")
+              } else {
+                reGenerateCaptcha.value = !reGenerateCaptcha.value
+                ruleFrom.value.code = ""
+                ElMessage.error(loginAdminResponse.data)
+              }
           }
         } else {
           ElMessage({

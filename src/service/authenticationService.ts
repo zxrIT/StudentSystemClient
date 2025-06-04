@@ -24,6 +24,13 @@ export function teacherLoginService<T>(loginParam: IUser): Promise<T> {
         return Promise.reject(error);
     })
 }
+export function adminLoginService<T>(loginParam: IUser): Promise<T> {
+    return httpAxios.post<T, T>("/authentication/admin/login", loginParam).then((response: T) => {
+        return response;
+    }, (error) => {
+        return Promise.reject(error);
+    })
+}
 
 export function verificationTokenService<T>(): Promise<T> {
     return httpAxios.get<T, T>("/authentication/verification/token").then((response: T) => {
