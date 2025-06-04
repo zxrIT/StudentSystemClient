@@ -1,19 +1,23 @@
 <script setup lang="ts">
-import {ITeacher} from "@/typings/interface/teacher";
+import {ITeacher, ITeacherCreateView, ITeacherCreate} from "@/typings/interface/teacher";
 import {IBaseResponse} from "@/typings/response/baseResponse";
 import {PaginationResponse} from "@/typings/response/pagination";
 import {
   getTeacherSelectService,
-  getTeacherService,
+  getTeacherService, incrementTeacherService,
   resetTeacherPasswordService,
-  updateTeacherService
+  updateTeacherService, deleteTeacherService
 } from "@/service/teacherService";
 import {TEACHER_COUNSELOR, TEACHER_JOB, TEACHER_SELECT} from "@/typings/enum/user";
 import {ElMessage, FormInstance} from "element-plus";
 import {useTeacherRules} from "@/rules/user/useTeacherRules";
 import {ICollegeName} from "@/typings/interface/college";
 import {getCollegeNamesService} from "@/service/collegeService";
+import SpeedDial from "primevue/speeddial";
 
+const uploadStudentImage = ref(null)
+const imageUrl = ref<string>("")
+const visibleIncrement = ref<boolean>(false);
 const isWatchActive = ref<boolean>(true);
 const ruleFormRef = ref<FormInstance>()
 const visibleEdit = ref<boolean>(false)
@@ -40,6 +44,22 @@ const ruleForm = reactive<ITeacher>({
 
 const ruleFromView = reactive<ITeacher>({
   id: "",
+  teacherId: "",
+  teacherName: "",
+  teacherCollege: "",
+  teacherJob: "",
+  isCounselor: ""
+})
+
+const ruleFormCreate = reactive<ITeacherCreate>({
+  teacherId: "",
+  teacherName: "",
+  teacherCollege: "",
+  teacherJob: 0,
+  isCounselor: false
+})
+
+const ruleFromCreateView = reactive<ITeacherCreateView>({
   teacherId: "",
   teacherName: "",
   teacherCollege: "",
@@ -79,6 +99,7 @@ const handleEdit = async (_, row: ITeacher) => {
     collegeSelects.splice(0, collegeSelects.length, ...collegeResponse.data)
   }
   visibleEdit.value = true
+  ruleFromView.teacherIcon = row.teacherIcon
   ruleFromView.id = row.id
   ruleFromView.teacherId = row.teacherId
   ruleFromView.teacherName = row.teacherName
@@ -102,6 +123,53 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       const teacherResponse = await updateTeacherService<IBaseResponse<string>>(ruleForm)
       if (teacherResponse.code === 200) {
         reRender.value = !reRender.value
+        visibleEdit.value = false
+        ElMessage({
+          type: 'success',
+          message: teacherResponse.data,
+        })
+      } else {
+        ElMessage({
+          type: 'error',
+          message: teacherResponse.data,
+        })
+      }
+    } else {
+      ElMessage({
+        type: 'error',
+        message: "请按照提示先填写信息后再提交",
+      })
+    }
+  })
+}
+
+const handleFileChange = (file) => {
+  uploadStudentImage.value = file.raw
+  imageUrl.value = URL.createObjectURL(file.raw);
+};
+
+const submitFormCreate = async (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  await formEl.validate(async (valid) => {
+    if (valid) {
+      ruleFormCreate.teacherId = ruleFromCreateView.teacherId
+      ruleFormCreate.teacherCollege = ruleFromCreateView.teacherCollege
+      ruleFormCreate.teacherName = ruleFromCreateView.teacherName
+      ruleFormCreate.isCounselor = ruleFromCreateView.isCounselor === TEACHER_COUNSELOR.COUNSELOR ? 1 : 0
+      ruleFormCreate.teacherJob = ruleFromCreateView.teacherJob === TEACHER_JOB.LECTURER ? 0 :
+          ruleFromCreateView.teacherJob === TEACHER_JOB.ASSOCIATE_PROFESSOR ? 1 : 2
+      const fromDataTeacher = new FormData()
+      fromDataTeacher.append(
+          "data",
+          new Blob([JSON.stringify(ruleFormCreate)], {
+            type: "application/json",
+          })
+      );
+      fromDataTeacher.append("iconImage", uploadStudentImage.value);
+      const teacherResponse = await incrementTeacherService<IBaseResponse<string>>(fromDataTeacher)
+      if (teacherResponse.code === 200) {
+        reRender.value = !reRender.value
+        visibleIncrement.value = false
         ElMessage({
           type: 'success',
           message: teacherResponse.data,
@@ -146,6 +214,59 @@ const command = async (payload: TEACHER_SELECT) => {
     tableData.splice(0, tableData.length, ...teacherResponse.data.records);
     pageCount.value = Math.ceil(teacherResponse.data.total / import.meta.env.VITE_PAGINATION_QUANTITY)
   }
+}
+
+const validateImageType = (rule, value, callback) => {
+  const allowedTypes = [
+    'image/jpeg',
+    'image/png',
+    'image/gif',
+    'image/bmp',
+    'image/webp'
+  ] as string[];
+  if (value && !allowedTypes.includes(value.type)) {
+    callback(new Error('支持格式：JPG/JPEG、PNG、GIF、BMP、WebP'));
+  } else {
+    callback();
+  }
+};
+
+const validateImageSize = (rule, value, callback) => {
+  if (value && value.size / 1024 / 1024 > 2) {
+    callback(new Error('头像大小不能超过2MB'));
+  } else {
+    callback();
+  }
+};
+
+const closeDrawerCreate = () => {
+  visibleIncrement.value = false
+}
+
+const incrementTeacher = async () => {
+  visibleIncrement.value = true
+  const collegeResponse = await getCollegeNamesService<IBaseResponse<ICollegeName[]>>()
+  if (collegeResponse.code === 200) {
+    collegeSelects.splice(0, collegeSelects.length, ...collegeResponse.data)
+  }
+  ruleFromCreateView.teacherJob = TEACHER_JOB.LECTURER
+  ruleFromCreateView.isCounselor = TEACHER_COUNSELOR.TEACHER
+}
+
+const deleteTeacher = async (id: string) => {
+  const teacherResponse = await deleteTeacherService<IBaseResponse<string>>(id)
+  if (teacherResponse.code === 200) {
+    ElMessage({
+      type: 'success',
+      message: teacherResponse.data,
+    })
+    reRender.value = !reRender.value
+    return;
+  }
+  ElMessage({
+    type: 'error',
+    message: teacherResponse.data,
+  })
 }
 </script>
 
@@ -212,6 +333,7 @@ const command = async (payload: TEACHER_SELECT) => {
                 Edit
               </el-button>
               <el-popconfirm
+                  @confirm="deleteTeacher(scope.row.teacherId)"
                   class="box-item"
                   title="确认要删除吗？"
                   placement="bottom-start"
@@ -302,9 +424,115 @@ const command = async (payload: TEACHER_SELECT) => {
       </div>
     </el-form>
   </el-drawer>
+  <el-drawer v-model="visibleIncrement" :show-close="false" direction="btt" size="40%">
+    <template #header="{ close, titleId, titleClass }">
+      <h4 :id="titleId" :class="titleClass">新增教师信息</h4>
+      <el-button type="danger" @click="closeDrawerCreate">
+        <el-icon class="el-icon--left">
+          <IEpCircleCloseFilled/>
+        </el-icon>
+        关闭
+      </el-button>
+    </template>
+    <el-form
+        ref="ruleFormRef"
+        :rules="useTeacherRules"
+        style="max-width: 99%"
+        :model="ruleFromCreateView"
+        label-width="auto"
+    >
+      <div class="form-container">
+        <div class="photo-container">
+          <el-form-item label="教师照片" :rules="[
+          { required: true, message: '请选择头像', trigger: 'change'},
+          { validator: validateImageType, trigger: 'change' },
+          { validator: validateImageSize, trigger: 'change' },
+      ]">
+            <el-upload
+                class="avatar-uploader"
+                :show-file-list="false"
+                :on-change="handleFileChange">
+              <img v-if="imageUrl" :src="imageUrl" class="avatar" alt=""/>
+              <el-icon v-else class="avatar-uploader-icon">
+                <IEpPlus/>
+              </el-icon>
+            </el-upload>
+          </el-form-item>
+        </div>
+        <div class="grid-form-items">
+          <el-form-item label="teacherId" prop="teacherId" style="align-items: center;">
+            <el-input v-model="ruleFromCreateView.teacherId"/>
+          </el-form-item>
+          <el-form-item label="teacherName" prop="teacherName" style="align-items: center;">
+            <el-input v-model="ruleFromCreateView.teacherName"/>
+          </el-form-item>
+          <el-form-item label="teacherCollege" prop="teacherCollege" style="grid-column: 1 / -1; align-items: center;">
+            <el-tooltip
+                :disabled="disabled"
+                content="此字段根据学院管理动态关联不可手动修改，请点击右侧的选择按钮选择存在的学院"
+                placement="bottom"
+                effect="light"
+            >
+              <el-input v-model="ruleFromCreateView.teacherCollege" disabled>
+                <template #append>
+                  <el-select v-model="ruleFromCreateView.teacherCollege" :placeholder="null" style="width: 300px">
+                    <el-option v-for="item in collegeSelects" :key="item.id" :label="item.collegeName"
+                               :value="item.collegeName"/>
+                  </el-select>
+                </template>
+              </el-input>
+            </el-tooltip>
+          </el-form-item>
+          <el-form-item label="teacherJob" prop="teacherJob" style="align-items: center;">
+            <el-segmented style="width: 100%" v-model="ruleFromCreateView.teacherJob" :options="locationOptionsJob"/>
+          </el-form-item>
+          <el-form-item label="isCounselor" prop="isCounselor" style="align-items: center;">
+            <el-segmented style="width: 100%" v-model="ruleFromCreateView.isCounselor"
+                          :options="locationOptionsCounselor"/>
+          </el-form-item>
+          <el-form-item style="align-items: center;">
+            <el-button type="primary" round size="large" @click="submitFormCreate(ruleFormRef)">
+              添加
+            </el-button>
+          </el-form-item>
+        </div>
+      </div>
+    </el-form>
+  </el-drawer>
+  <SpeedDial @click="incrementTeacher" direction="right" :style="{ position: 'absolute', right: 10, bottom: 400 }"
+             :buttonProps="{ severity: 'warn', rounded: true }"/>
 </template>
 
+<style>
+.avatar-uploader .el-upload {
+  border: 1px dashed var(--el-border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: var(--el-transition-duration-fast);
+}
+
+.avatar-uploader .el-upload:hover {
+  border-color: var(--el-color-primary);
+}
+
+.el-icon.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  text-align: center;
+}
+</style>
+
 <style scoped lang="less">
+.avatar-uploader .avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
+
 .teacher-management-container {
   width: 100%;
   height: 100%;

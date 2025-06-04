@@ -6,13 +6,16 @@ import {IBaseResponse} from "@/typings/response/baseResponse";
 import {IClass} from "@/typings/interface/class";
 import {SYSTEM_LEFT_NAV} from "@/typings/enum/systemEnum";
 import {ICollegeName} from "@/typings/interface/college";
-import {getCollegeNamesService, updateCollegeService} from "@/service/collegeService";
+import {getCollegeNamesService} from "@/service/collegeService";
 import {watch} from "vue";
 import {ITeacher} from "@/typings/interface/teacher";
+import {incrementClassService} from "@/service/classService";
 import {getAllCounselorService, getAllTeacherService} from "@/service/teacherService";
 import {useClassRules} from "@/rules/user/useClassRules";
+import SpeedDial from "primevue/speeddial";
 
 
+const centerDialogVisibleCreate = ref<boolean>(false);
 const router: Router = useRouter();
 const centerDialogVisible = ref<boolean>(false)
 const college = ref<string>("")
@@ -36,6 +39,14 @@ const ruleForm = reactive<IClass>({
   counselor: "",
   headTeacher: ""
 })
+const ruleFormCreate = reactive<IClass>({
+  className: "",
+  studentCount: 0,
+  college: "",
+  counselor: "",
+  headTeacher: ""
+})
+
 const ruleFormRef = ref<FormInstance>()
 
 watch(selectCounselor, () => {
@@ -113,11 +124,38 @@ const deleteClassName = async (classId: string) => {
   }
 }
 
+const incrementClass = () => {
+  centerDialogVisibleCreate.value = true
+}
+
 const navigateToClassDetails = (className: IClass) => {
   router.push({
     path: SYSTEM_LEFT_NAV.CLASS_DETAILS,
     query: {classObject: JSON.stringify(className)}
   })
+}
+
+const submitFormCreate = async (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  await formEl.validate(async (valid, _) => {
+        if (valid) {
+          const classNameResponse = await incrementClassService<IBaseResponse<string>>(ruleFormCreate)
+          console.log(classNameResponse)
+          if (classNameResponse.code === 200) {
+            reRender.value = !reRender.value;
+            centerDialogVisibleCreate.value = false
+            ElMessage.success(classNameResponse.data)
+          } else {
+            ElMessage.error(classNameResponse.data)
+          }
+        } else {
+          ElMessage({
+            type: 'error',
+            message: "请按照提示先填写信息后再提交",
+          })
+        }
+      }
+  )
 }
 
 const submitForm = async (formEl: FormInstance | undefined) => {
@@ -324,6 +362,97 @@ onMounted(async () => {
       </div>
     </template>
   </el-dialog>
+  <el-dialog v-model="centerDialogVisibleCreate" title="添加班级数据" width="650" center>
+    <el-form
+        :rules="useClassRules"
+        ref="ruleFormRef"
+        style="max-width: 600px"
+        :model="ruleFormCreate"
+        label-width="auto"
+    >
+      <el-form-item label="className" prop="className">
+        <el-input v-model="ruleFormCreate.className"/>
+      </el-form-item>
+      <el-form-item label="college" prop="college">
+        <el-tooltip
+            :disabled="disabled"
+            content="此字段根据学院管理动态关联不可手动修改，请点击右侧的选择按钮选择存在的学院"
+            placement="bottom"
+            effect="light"
+        >
+          <el-input v-model="ruleFormCreate.college" disabled>
+            <template #append>
+              <el-select v-model="ruleFormCreate.college" placeholder="Select" style="width: 200px">
+                <el-option v-for="item in collegeSelects"
+                           :key="item.id"
+                           :label="item.collegeName" :value="item.collegeName"/>
+              </el-select>
+            </template>
+          </el-input>
+        </el-tooltip>
+      </el-form-item>
+      <el-form-item label="counselor" prop="counselor">
+        <el-tooltip
+            :disabled="disabled"
+            content="此字段根据教师管理动态关联不可手动修改，请点击右侧的选择按钮选择辅导员"
+            placement="bottom"
+            effect="light"
+        >
+          <el-input v-model="ruleFormCreate.counselor" disabled>
+            <template #append>
+              <el-select v-model="ruleFormCreate.counselor" placeholder="Select" style="width: 200px">
+                <template #header>
+                  <el-input placeholder="请输入教师名字的关键词" v-model="selectCounselor"/>
+                </template>
+                <el-option v-for="item in onMountedCounselorFilter" :key="item.id" :label="item.teacherName"
+                           :value="item.teacherName"/>
+              </el-select>
+            </template>
+          </el-input>
+        </el-tooltip>
+      </el-form-item>
+      <el-form-item label="headTeacher" prop="headTeacher">
+        <el-tooltip
+            :disabled="disabled"
+            content="此字段根据教师管理动态关联不可手动修改，请点击右侧的选择按钮选择教师"
+            placement="bottom"
+            effect="light"
+        >
+          <el-input v-model="ruleFormCreate.headTeacher" disabled>
+            <template #append>
+              <el-select v-model="ruleFormCreate.headTeacher" placeholder="Select" style="width: 200px">
+                <template #header>
+                  <el-input placeholder="请输入教师名字的关键词" v-model="selectTeacher"/>
+                </template>
+                <el-option v-for="item in onMountedTeacherFilter" :key="item.id" :label="item.teacherName"
+                           :value="item.teacherName"/>
+              </el-select>
+            </template>
+          </el-input>
+        </el-tooltip>
+      </el-form-item>
+      <el-tooltip
+          :disabled="disabled"
+          content="此字段根据学生管理动态关联不可手动修改，如有问题请联系管理员处理"
+          placement="bottom"
+          effect="light"
+      >
+        <el-form-item label="studentCount" prop="studentCount">
+          <el-input v-model="ruleFormCreate.studentCount" disabled/>
+        </el-form-item>
+      </el-tooltip>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="centerDialogVisibleCreate = false">取消</el-button>
+        <el-button type="primary" @click="submitFormCreate(ruleFormRef)">
+          添加
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
+  <SpeedDial @click="incrementClass" direction="right" :style="{ position: 'absolute', right: 10, bottom: 400 }"
+             :buttonProps="{ severity: 'warn', rounded: true }"/>
 </template>
 
 <style scoped lang="less">

@@ -9,6 +9,14 @@ export function getTeacherService<T>(quantity: number, page: number): Promise<T>
     })
 }
 
+export function deleteTeacherService<T>(teacherId: string): Promise<T> {
+    return httpAxios.delete<T, T>(`/user/teacher/deleteTeacher/${teacherId}`).then((response: T) => {
+        return response;
+    }, (error) => {
+        return Promise.reject(error);
+    })
+}
+
 export function getAllTeacherService<T>(): Promise<T> {
     return httpAxios.get<T, T>("/user/teacher/getAllTeacher").then((response: T) => {
         return response;
@@ -36,6 +44,14 @@ export function getTeacherSelectService<T>(payload: number, content: string | nu
 
 export function updateTeacherService<T>(teacher: ITeacher): Promise<T> {
     return httpAxios.put<T, T>("/user/teacher/updateTeacher", teacher).then((response: T) => {
+        return response;
+    }, (error) => {
+        return Promise.reject(error);
+    })
+}
+
+export function incrementTeacherService<T>(data: FormData): Promise<T> {
+    return httpAxios.post<T, T>("/user/teacher/incrementTeacher", data).then((response: T) => {
         return response;
     }, (error) => {
         return Promise.reject(error);

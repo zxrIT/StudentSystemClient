@@ -20,7 +20,6 @@ import {ICollegeName} from "@/typings/interface/college";
 import SpeedDial from 'primevue/speeddial';
 
 const imageUrl = ref<string>("")
-const selectedFile = ref(null);
 const selectDisabledCreate = ref<boolean>(true);
 const selectDisabled = ref<boolean>(true);
 const collegeSelects = reactive<ICollegeName[]>([])

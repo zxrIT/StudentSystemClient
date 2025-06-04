@@ -1,12 +1,19 @@
 <script setup lang="ts">
 import {useTransition} from '@vueuse/core'
-import {getCollegeService, updateCollegeIsExistenceService, updateCollegeService} from "@/service/collegeService";
+import {
+  getCollegeService,
+  incrementCollegeService,
+  updateCollegeIsExistenceService,
+  updateCollegeService
+} from "@/service/collegeService";
 import {IBaseResponse} from "@/typings/response/baseResponse";
 import {PaginationResponse} from "@/typings/response/pagination";
 import {ICollege} from "@/typings/interface/college";
 import {useCollegeRules} from "@/rules/user/useCollegeRules";
 import {ElMessage, FormInstance} from 'element-plus'
+import SpeedDial from "primevue/speeddial";
 
+const visibleCreate = ref<boolean>(false);
 const ruleFormRef = ref<FormInstance>()
 const reRender = ref<boolean>(false);
 const visibleEdit = ref<boolean>(false)
@@ -20,6 +27,12 @@ const disabled = ref<boolean>(false)
 
 const ruleForm = reactive<ICollege>({
   id: "",
+  collegeId: "",
+  collegeName: "",
+  classCount: 0,
+})
+
+const ruleFormCreate = reactive<ICollege>({
   collegeId: "",
   collegeName: "",
   classCount: 0,
@@ -62,7 +75,6 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate(async (valid, _) => {
         if (valid) {
-          console.log(1)
           const collegeResponse = await updateCollegeService<IBaseResponse<string>>(ruleForm)
           if (collegeResponse.code === 200) {
             reRender.value = !reRender.value
@@ -84,6 +96,38 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         }
       }
   )
+}
+
+const submitFormCreate = async (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  await formEl.validate(async (valid, _) => {
+        if (valid) {
+          const collegeResponse = await incrementCollegeService<IBaseResponse<string>>(ruleFormCreate)
+          if (collegeResponse.code === 200) {
+            visibleCreate.value = false
+            reRender.value = !reRender.value
+            ElMessage({
+              type: 'success',
+              message: collegeResponse.data,
+            })
+          } else {
+            ElMessage({
+              type: 'error',
+              message: collegeResponse.data,
+            })
+          }
+        } else {
+          ElMessage({
+            type: 'error',
+            message: "请按照提示先填写信息后再提交",
+          })
+        }
+      }
+  )
+}
+
+const incrementCollege = () => {
+  visibleCreate.value = true
 }
 
 const changExistence = async (_, row: ICollege) => {
@@ -223,6 +267,49 @@ const changExistence = async (_, row: ICollege) => {
       </el-form-item>
     </el-form>
   </el-drawer>
+  <el-drawer v-model="visibleCreate" :show-close="false" direction="ttb">
+    <template #header="{ close, titleId, titleClass }">
+      <h4 :id="titleId" :class="titleClass">添加学院信息</h4>
+      <el-button type="danger" @click="closeDrawer">
+        <el-icon class="el-icon--left">
+          <IEpCircleCloseFilled/>
+        </el-icon>
+        关闭
+      </el-button>
+    </template>
+    <el-form
+        :inline="true"
+        ref="ruleFormRef"
+        style="max-width: 99%"
+        :model="ruleFormCreate"
+        :rules="useCollegeRules"
+        label-width="auto"
+    >
+      <el-form-item label="collegeId" prop="collegeId">
+        <el-input v-model="ruleFormCreate.collegeId"/>
+      </el-form-item>
+      <el-form-item label="collegeName" prop="collegeName">
+        <el-input v-model="ruleFormCreate.collegeName"/>
+      </el-form-item>
+      <el-tooltip
+          :disabled="disabled"
+          content="此字段根据课程管理动态关联不可手动修改，如有问题请联系管理员处理"
+          placement="bottom"
+          effect="light"
+      >
+        <el-form-item label="classCount" prop="classCount">
+          <el-input v-model.number="ruleFormCreate.classCount" disabled/>
+        </el-form-item>
+      </el-tooltip>
+      <el-form-item>
+        <el-button type="primary" round size="large" @click="submitFormCreate(ruleFormRef)">
+          添加
+        </el-button>
+      </el-form-item>
+    </el-form>
+  </el-drawer>
+  <SpeedDial @click="incrementCollege" direction="right" :style="{ position: 'absolute', right: 10, bottom: 400 }"
+             :buttonProps="{ severity: 'warn', rounded: true }"/>
 </template>
 
 <style scoped lang="less">
