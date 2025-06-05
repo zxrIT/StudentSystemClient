@@ -172,7 +172,7 @@ const changExistence = async (_, row: ICollege) => {
                     </el-icon>
                   </div>
                 </template>
-                <template #suffix>/1000</template>
+                <template #suffix>/MAX</template>
               </el-statistic>
             </el-col>
             <el-col :span="4">
