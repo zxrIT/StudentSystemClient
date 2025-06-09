@@ -2,6 +2,7 @@ import {createRouter, createWebHashHistory} from 'vue-router'
 import type {RouteRecordRaw} from 'vue-router'
 import HomeView from "@/views/HomeView.vue";
 import StudentManagement from '@/views/management/StudentManagement.vue';
+import MyInformationView from "@/views/services/MyInformationView.vue";
 import LoginView from "@/views/LoginView.vue";
 import {useUserInfoStore} from "@/store/storeHooks/userInfoStore";
 import {useLocalStorage} from "@/hooks/useLocalStorage"
@@ -15,8 +16,23 @@ const routes: Array<RouteRecordRaw> = [
         path: SYSTEM_LEFT_NAV.HOME,
         name: "home",
         component: HomeView,
-        redirect: SYSTEM_LEFT_NAV.STUDENT,
+        redirect: SYSTEM_LEFT_NAV.INFORMATION,
         children: [
+            {
+                path: SYSTEM_LEFT_NAV.INFORMATION,
+                name: "information",
+                component: MyInformationView,
+            },
+            {
+                path: SYSTEM_LEFT_NAV.MYCOURSES,
+                name: "mycourse",
+                component: () => import("@/views/services/MyCourse.vue")
+            },
+            {
+                path: SYSTEM_LEFT_NAV.SELECTION,
+                name: "selection",
+                component: () => import("@/views/services/CourseSelectionView.vue")
+            },
             {
                 path: SYSTEM_LEFT_NAV.STUDENT,
                 name: "student",
@@ -46,6 +62,11 @@ const routes: Array<RouteRecordRaw> = [
                 path: SYSTEM_LEFT_NAV.COLLEGE,
                 name: "college",
                 component: () => import("@/views/management/CollegeManagement.vue"),
+            },
+            {
+                path: SYSTEM_LEFT_NAV.COURSE,
+                name: "course",
+                component: () => import("@/views/services/PublishCourseView.vue")
             }
         ]
     },

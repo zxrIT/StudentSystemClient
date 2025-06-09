@@ -5,7 +5,11 @@ const enMessage = {
         "TeacherManagement": 'Teacher management',
         "CurriculumManagement": 'Curriculum management',
         "ClassManagement": 'Class management',
-        "CollegeManagement": 'College management'
+        "CollegeManagement": 'College management',
+        "CoursePublish": "CoursePublish",
+        "SelfSelectedCourses": "selected courses",
+        "MyInformation": "My information",
+        "MyCourse":"My course"
     },
     login: {
         "Unified authentication": "Unified Authentication",

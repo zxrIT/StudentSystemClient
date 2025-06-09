@@ -11,11 +11,28 @@ const userInfoStore = useUserInfoStore()
       <el-row class="tac">
         <el-col style="width: 100%">
           <el-menu
-              default-active="1"
-              @open="handleOpen"
-              @close="handleClose"
+              :default-active="SYSTEM_LEFT_NAV.INFORMATION"
               router
           >
+            <el-menu-item :index="SYSTEM_LEFT_NAV.INFORMATION">
+              <el-icon>
+                <IEpSetting/>
+              </el-icon>
+              <span>{{ $t("message.leftNav.MyInformation") }}</span>
+            </el-menu-item>
+            <el-menu-item :index="SYSTEM_LEFT_NAV.SELECTION"
+                          v-if="userInfoStore.userInfoStore.loginType===1&& userInfoStore.userInfoStore.roleId===0">
+              <el-icon>
+                <IEpBox/>
+              </el-icon>
+              <span>{{ $t("message.leftNav.SelfSelectedCourses") }}</span>
+            </el-menu-item>
+            <el-menu-item :index="SYSTEM_LEFT_NAV.MYCOURSES">
+              <el-icon>
+                <IEpBriefcase/>
+              </el-icon>
+              <span>{{ $t("message.leftNav.MyCourse") }}</span>
+            </el-menu-item>
             <el-sub-menu v-if="userInfoStore.userInfoStore.loginType===3&& userInfoStore.userInfoStore.roleId===2"
                          :index="SYSTEM_LEFT_NAV.HOME">
               <template #title>
@@ -53,6 +70,13 @@ const userInfoStore = useUserInfoStore()
                 <IEpReading/>
               </el-icon>
               <span>{{ $t("message.leftNav.CollegeManagement") }}</span>
+            </el-menu-item>
+            <el-menu-item v-if="userInfoStore.userInfoStore.loginType===3&& userInfoStore.userInfoStore.roleId===2"
+                          :index="SYSTEM_LEFT_NAV.COURSE">
+              <el-icon>
+                <IEpPromotion/>
+              </el-icon>
+              <span>{{ $t("message.leftNav.CoursePublish") }}</span>
             </el-menu-item>
           </el-menu>
         </el-col>

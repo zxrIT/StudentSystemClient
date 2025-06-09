@@ -9,6 +9,14 @@ export function getCurriculumService<T>(quantity: number, page: number): Promise
     })
 }
 
+export function getCurriculumByIdService<T>(courseId:string): Promise<T> {
+    return httpAxios.get<T, T>(`/curriculum/getCurriculumById/${courseId}`).then((response: T) => {
+        return response;
+    }, (error) => {
+        return Promise.reject(error);
+    })
+}
+
 export function getCurriculumDeleteService<T>(quantity: number, page: number): Promise<T> {
     return httpAxios.get<T, T>(`/curriculum/getDeleteCurriculum/${quantity}/${page}`).then((response: T) => {
         return response;

@@ -16,6 +16,8 @@ const isDark = useDark()
 const toggleDark = useToggle(isDark)
 const isEnglish = ref<boolean>(false)
 
+const __VITE_USER_AVATAR__ = computed(() => import.meta.env.VITE_USER_AVATAR)
+
 const navigateGithub = () => {
   window.open(import.meta.env.VITE_GITHUB_URL, "_blank")
 }

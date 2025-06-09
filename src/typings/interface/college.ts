@@ -9,4 +9,5 @@ export interface ICollege {
 export interface ICollegeName {
     id: string,
     collegeName: string,
+    collegeId: string,
 }

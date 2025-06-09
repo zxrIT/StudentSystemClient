@@ -1,5 +1,5 @@
 import httpAxios from "@/http";
-import {IStudent, IStudentCreate} from "@/typings/interface/student";
+import {IStudent} from "@/typings/interface/student";
 
 export function getStudentService<T>(quantity: number, page: number): Promise<T> {
     return httpAxios.get<T, T>(`/user/student/getStudent/${quantity}/${page}`).then((response: T) => {
